@@ -200,14 +200,21 @@ interface Recipe {
   }
 }
 
-export default function RecipePage({ params }: { params: { slug: string } }) {
+// Definição simples dos parâmetros
+type PageProps = {
+  params: {
+    slug: string
+  }
+}
+
+export default function RecipePage({ params }: PageProps) {
   const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
   const router = useRouter()
   
-  // Acessar params.slug diretamente, já que params é passado como prop
+  // Acessar params.slug diretamente
   const recipeSlug = params.slug
 
   useEffect(() => {

@@ -32,7 +32,14 @@ const ErrorMessage = styled.div`
   border-radius: ${props => props.theme.borderRadius.md};
 `
 
-export default function EditRecipePage({ params }: { params: { slug: string } }) {
+// Definição simples dos parâmetros
+type PageProps = {
+  params: {
+    slug: string
+  }
+}
+
+export default function EditRecipePage({ params }: PageProps) {
   const router = useRouter()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -40,8 +47,8 @@ export default function EditRecipePage({ params }: { params: { slug: string } })
   const [recipe, setRecipe] = useState<any>(null)
   const [error, setError] = useState('')
 
-  // Usar React.use() para acessar params.slug conforme recomendado pelo Next.js 15
-  const recipeSlug = React.use(params).slug
+  // Acessar params.slug diretamente
+  const recipeSlug = params.slug
 
   useEffect(() => {
     if (!user) {
@@ -98,7 +105,7 @@ export default function EditRecipePage({ params }: { params: { slug: string } })
         console.log(pair[0] + ': ' + (pair[1] instanceof File ? `Arquivo: ${pair[1].name} (${pair[1].size} bytes)` : pair[1]))
       }
       
-      const response = await fetch(`http://localhost:8000/api/recipes/${params.slug}/`, {
+      const response = await fetch(`http://localhost:8000/api/recipes/${recipeSlug}/`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

@@ -70,8 +70,14 @@ interface Profile {
   }
 }
 
-export default function PublicProfilePage({ params }: { params: { username: string } }) {
-  const actualParams = params
+// Definição simples dos parâmetros
+type PageProps = {
+  params: {
+    username: string
+  }
+}
+
+export default function PublicProfilePage({ params }: PageProps) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

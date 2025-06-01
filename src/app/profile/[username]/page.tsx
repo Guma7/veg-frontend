@@ -2,7 +2,14 @@
 import { useState, useEffect } from 'react';
 import { UserProfile } from '../../../types/user';
 
-export default function ProfilePage({ params }: { params: { username: string } }) {
+// Definição simples dos parâmetros
+type PageProps = {
+  params: {
+    username: string
+  }
+}
+
+export default function ProfilePage({ params }: PageProps) {
   // Decodificar o nome de usuário da URL
   const decodedUsername = decodeURIComponent(params.username);
   
