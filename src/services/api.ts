@@ -31,6 +31,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     
     // Obter o token CSRF do cookie
     const csrfToken = getCookie('csrftoken');
+    console.log(`CSRF Token: ${csrfToken || 'Não encontrado'}`);
     
     // Preparar headers
     const headers: Record<string, string> = {
@@ -41,6 +42,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     // Adicionar o token CSRF ao header para todas as requisições POST, PUT, PATCH e DELETE
     if (csrfToken && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method || 'GET')) {
       headers['X-CSRFToken'] = csrfToken;
+      console.log('Adicionando token CSRF ao header');
     }
     
     // Sempre incluir credentials: 'include' para enviar cookies de sessão
@@ -57,15 +59,44 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
       fullUrl = `${API_URL}${endpoint}`;
     }
     
+    console.log(`Fazendo requisição para: ${fullUrl}`);
+    console.log('API_URL configurada:', API_URL);
+    console.log('Opções da requisição:', JSON.stringify(fetchOptions, null, 2));
+    
     const response = await fetch(fullUrl, fetchOptions);
+    console.log(`Resposta recebida: Status ${response.status} ${response.statusText}`);
+    
+    // Log dos headers da resposta
+    const responseHeaders: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+      responseHeaders[key] = value;
+    });
+    console.log('Headers da resposta:', responseHeaders);
+    
     if (!response.ok) {
-      const error: ApiError = new Error('Erro na requisição');
+      console.error(`Erro na requisição: ${response.status} ${response.statusText}`);
+      const error: ApiError = new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
       error.status = response.status;
-      error.data = await response.json().catch(() => ({}));
+      try {
+        error.data = await response.json();
+        console.error('Detalhes do erro:', error.data);
+      } catch (e) {
+        error.data = {};
+        console.error('Não foi possível obter detalhes do erro');
+      }
       throw error;
     }
-    return response.json();
+    
+    const data = await response.json();
+    console.log('Resposta recebida:', data);
+    return data;
   } catch (error) {
+    console.error('Erro ao fazer requisição:', error);
+    // Adicionar mais detalhes sobre o erro
+    if (error instanceof Error) {
+      console.error('Mensagem de erro:', error.message);
+      console.error('Stack trace:', error.stack);
+    }
     throw error;
   }
 }
@@ -73,28 +104,51 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 // Login, registro e logout simplificados, sem token
 export const apiAuth = {
   login: async (username: string, password: string) => {
-    const response = await fetchApi('/api/auth/login/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    if (response && response.user) {
-      return response.user;
+    try {
+      console.log('Tentando fazer login para:', username);
+      console.log('URL da API para login:', `${API_URL}/api/auth/login/`);
+      const response = await fetchApi('/api/auth/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      if (response && response.user) {
+        console.log('Login bem-sucedido:', response.user);
+        return response.user;
+      }
+      throw new Error('Falha ao fazer login.');
+    } catch (error) {
+      console.error('Erro durante o login:', error);
+      throw error;
     }
-    throw new Error('Falha ao fazer login.');
   },
   register: async (data: { username: string, email: string, password: string }) => {
-    const response = await fetchApi('/api/auth/register/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (response && response.user) {
-      return response.user;
+    try {
+      console.log('Tentando registrar usuário:', data.username);
+      console.log('URL da API para registro:', `${API_URL}/api/auth/register/`);
+      const response = await fetchApi('/api/auth/register/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (response && response.user) {
+        console.log('Registro bem-sucedido:', response.user);
+        return response.user;
+      }
+      throw new Error('Falha ao registrar.');
+    } catch (error) {
+      console.error('Erro durante o registro:', error);
+      throw error;
     }
-    throw new Error('Falha ao registrar.');
   },
   logout: async () => {
-    return fetchApi('/api/auth/logout/', { method: 'POST' });
+    try {
+      console.log('Tentando fazer logout');
+      console.log('URL da API para logout:', `${API_URL}/api/auth/logout/`);
+      return await fetchApi('/api/auth/logout/', { method: 'POST' });
+    } catch (error) {
+      console.error('Erro durante o logout:', error);
+      throw error;
+    }
   }
 }
