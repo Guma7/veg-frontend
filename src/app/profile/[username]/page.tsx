@@ -26,11 +26,45 @@ export default function ProfilePage({ params }: PageProps) {
       try {
         // Se for FormData, enviar como multipart/form-data
         if (updatedProfile instanceof FormData) {
-          // Obter o token CSRF do cookie
-          const csrfToken = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('csrftoken='))
-            ?.split('=')[1];
+          // Obter o token CSRF atualizado antes de enviar
+          let csrfToken = '';
+          try {
+            console.log('Obtendo token CSRF da URL:', `${API_URL}/api/auth/csrf/`);
+            const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
+              method: 'GET',
+              credentials: 'include',
+              headers: {
+                'Accept': 'application/json'
+              }
+            });
+            
+            if (!csrfResponse.ok) {
+              console.error(`Erro ao obter token CSRF: ${csrfResponse.status} ${csrfResponse.statusText}`);
+            } else {
+              const csrfData = await csrfResponse.json();
+              console.log('Resposta do servidor CSRF:', csrfData);
+              if (csrfData && csrfData.csrfToken) {
+                csrfToken = csrfData.csrfToken;
+                console.log('Token CSRF obtido da resposta JSON:', csrfToken);
+              }
+            }
+          } catch (error) {
+            console.error('Erro ao atualizar token CSRF:', error);
+          }
+          
+          // Se não obteve o token da resposta JSON, tentar obter do cookie
+          if (!csrfToken) {
+            csrfToken = document.cookie
+              .split('; ')
+              .find(row => row.startsWith('csrftoken='))
+              ?.split('=')[1] || '';
+            
+            if (csrfToken) {
+              console.log('Token CSRF obtido do cookie:', csrfToken);
+            } else {
+              console.warn('Token CSRF não encontrado no cookie');
+            }
+          }
   
           // Adicionar o token CSRF ao header
           const headers: Record<string, string> = {};
@@ -38,10 +72,11 @@ export default function ProfilePage({ params }: PageProps) {
             headers['X-CSRFToken'] = csrfToken;
             console.log('Token CSRF adicionado ao header:', csrfToken);
           } else {
-            console.warn('Token CSRF não encontrado no cookie');
+            console.warn('Nenhum token CSRF disponível para adicionar ao header');
           }
   
           // Usar a URL completa do backend
+          console.log('Enviando para URL:', `${API_URL}/api/user/profile`);
           const response = await fetch(`${API_URL}/api/user/profile`, {
             method: 'PUT',
             headers: headers,
@@ -75,12 +110,12 @@ export default function ProfilePage({ params }: PageProps) {
             };
           });
         
-        // Forçar recarregamento da página para atualizar todos os componentes
-        window.location.reload();
-      } else {
-        // Código para atualizações que não são FormData
-        // Implementar conforme necessário
-      }
+          // Forçar recarregamento da página para atualizar todos os componentes
+          window.location.reload();
+        } else {
+          // Código para atualizações que não são FormData
+          // Implementar conforme necessário
+        }
       
       setShowEditModal(false);
     } catch (error) {

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/auth/';
+// Usar a variável de ambiente para a URL da API
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 interface UserData {
   username?: string;
@@ -29,14 +30,35 @@ const getCsrfToken = (): string => {
 // Função para obter o token CSRF do servidor de forma síncrona
 const fetchCsrfToken = async (): Promise<string> => {
   try {
-    // Usar API_URL em vez de URL hardcoded para funcionar em produção
-    await fetch(`${API_URL}/api/auth/csrf/`, {
+    console.log('Obtendo token CSRF do servidor:', `${API_URL}/api/auth/csrf/`);
+    
+    // Usar a URL completa do backend
+    const response = await fetch(`${API_URL}/api/auth/csrf/`, {
       method: 'GET',
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json'
+      }
     });
     
-    // Após a requisição, o cookie deve estar disponível
-    return getCsrfToken();
+    if (!response.ok) {
+      throw new Error(`Erro ao obter token CSRF: ${response.status} ${response.statusText}`);
+    }
+    
+    // Tentar obter o token da resposta JSON
+    const data = await response.json();
+    console.log('Resposta do servidor CSRF:', data);
+    
+    if (data && data.csrfToken) {
+      console.log('Token CSRF obtido da resposta JSON');
+      return data.csrfToken;
+    }
+    
+    // Se não encontrou no JSON, tentar obter do cookie
+    const tokenFromCookie = getCsrfToken();
+    console.log('Token CSRF obtido do cookie:', tokenFromCookie ? 'Sim' : 'Não');
+    
+    return tokenFromCookie;
   } catch (err) {
     console.error('Erro ao obter token CSRF:', err);
     return '';

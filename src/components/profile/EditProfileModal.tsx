@@ -95,9 +95,8 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(profile.profileImage || profile.profile_image || null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
     if (isSubmitting) return;
     setIsSubmitting(true);
     setError(null);
@@ -106,11 +105,22 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
       // Obter o token CSRF antes de enviar o formulário
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        await fetch(`${API_URL}/api/auth/csrf/`, {
+        console.log('Obtendo token CSRF da URL:', `${API_URL}/api/auth/csrf/`);
+        
+        const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
           method: 'GET',
-          credentials: 'include'
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json'
+          }
         });
-        console.log('Token CSRF atualizado antes do envio do formulário');
+        
+        if (!csrfResponse.ok) {
+          console.error(`Erro ao obter token CSRF: ${csrfResponse.status} ${csrfResponse.statusText}`);
+        } else {
+          const csrfData = await csrfResponse.json();
+          console.log('Resposta do servidor CSRF:', csrfData);
+        }
       } catch (error) {
         console.error('Erro ao obter token CSRF:', error);
       }
