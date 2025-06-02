@@ -29,7 +29,8 @@ const getCsrfToken = (): string => {
 // Função para obter o token CSRF do servidor de forma síncrona
 const fetchCsrfToken = async (): Promise<string> => {
   try {
-    await fetch('http://localhost:8000/api/auth/csrf/', {
+    // Usar API_URL em vez de URL hardcoded para funcionar em produção
+    await fetch(`${API_URL}/api/auth/csrf/`, {
       method: 'GET',
       credentials: 'include'
     });

@@ -96,25 +96,37 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     
-    if (isSubmitting) return
-    setIsSubmitting(true)
-    setError(null)
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError(null);
     
     try {
-      const formDataToSend = new FormData()
-      formDataToSend.append('description', formData.description)
+      // Obter o token CSRF antes de enviar o formulário
+      try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        await fetch(`${API_URL}/api/auth/csrf/`, {
+          method: 'GET',
+          credentials: 'include'
+        });
+        console.log('Token CSRF atualizado antes do envio do formulário');
+      } catch (error) {
+        console.error('Erro ao obter token CSRF:', error);
+      }
+      
+      const formDataToSend = new FormData();
+      formDataToSend.append('description', formData.description);
       
       // Verificar se há uma nova imagem para enviar
       if (formData.profile_image) {
-        formDataToSend.append('profile_image', formData.profile_image)
-        console.log('Enviando imagem:', formData.profile_image.name, formData.profile_image.type, formData.profile_image.size)
+        formDataToSend.append('profile_image', formData.profile_image);
+        console.log('Enviando imagem:', formData.profile_image.name, formData.profile_image.type, formData.profile_image.size);
       } else if (previewUrl === null) {
-        formDataToSend.append('remove_profile_image', 'true')
+        formDataToSend.append('remove_profile_image', 'true');
       }
       
-      formDataToSend.append('social_links', JSON.stringify(formData.social_links))
+      formDataToSend.append('social_links', JSON.stringify(formData.social_links));
       
       // Adicionar logs para depuração
       console.log('Enviando dados do formulário:', {
@@ -122,17 +134,17 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
         hasImage: !!formData.profile_image,
         removeImage: previewUrl === null,
         socialLinks: formData.social_links
-      })
+      });
       
       // Chamar a função onSave com os dados do formulário
-      await onSave(formDataToSend)
+      await onSave(formDataToSend);
     } catch (error) {
-      console.error('Erro detalhado ao salvar perfil:', error)
-      setError(error instanceof Error ? error.message : 'Erro ao salvar perfil. Tente novamente.')
+      console.error('Erro detalhado ao salvar perfil:', error);
+      setError(error instanceof Error ? error.message : 'Erro ao salvar perfil. Tente novamente.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

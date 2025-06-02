@@ -18,36 +18,62 @@ export default function ProfilePage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   
+  // Importar a variável API_URL
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  
   const handleSaveProfile = async (updatedProfile: FormData | Partial<UserProfile>) => {
-    setIsLoading(true);
-    try {
-      // Se for FormData, enviar como multipart/form-data
-      if (updatedProfile instanceof FormData) {
-        const response = await fetch('/api/user/profile', {
-          method: 'PUT',
-          body: updatedProfile,
-          // Não definir Content-Type, o navegador vai definir automaticamente com boundary
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Erro ao atualizar perfil: ${response.status}`);
-        }
-        
-        const updatedData = await response.json();
-        
-        // Atualizar o estado com os dados atualizados
-        setProfile((prev: UserProfile | null) => {
-          if (!prev) return updatedData; // Se prev for null, retornar apenas os dados atualizados
+      setIsLoading(true);
+      try {
+        // Se for FormData, enviar como multipart/form-data
+        if (updatedProfile instanceof FormData) {
+          // Obter o token CSRF do cookie
+          const csrfToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+  
+          // Adicionar o token CSRF ao header
+          const headers: Record<string, string> = {};
+          if (csrfToken) {
+            headers['X-CSRFToken'] = csrfToken;
+            console.log('Token CSRF adicionado ao header:', csrfToken);
+          } else {
+            console.warn('Token CSRF não encontrado no cookie');
+          }
+  
+          // Usar a URL completa do backend
+          const response = await fetch(`${API_URL}/api/user/profile`, {
+            method: 'PUT',
+            headers: headers,
+            body: updatedProfile,
+            credentials: 'include', // Importante para enviar cookies
+            // Não definir Content-Type, o navegador vai definir automaticamente com boundary
+          });
           
-          return {
-            ...prev,
-            ...updatedData,
-            // Forçar atualização da imagem adicionando timestamp
-            profileImage: updatedData.profile_image ? 
-              `${updatedData.profile_image}?t=${new Date().getTime()}` : 
-              null
-          };
-        });
+          console.log('Resposta da API:', response.status, response.statusText);
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Erro detalhado:', errorText);
+            throw new Error(`Erro ao atualizar perfil: ${response.status} - ${errorText}`);
+          }
+          
+          const updatedData = await response.json();
+          console.log('Dados atualizados recebidos:', updatedData);
+          
+          // Atualizar o estado com os dados atualizados
+          setProfile((prev: UserProfile | null) => {
+            if (!prev) return updatedData; // Se prev for null, retornar apenas os dados atualizados
+            
+            return {
+              ...prev,
+              ...updatedData,
+              // Forçar atualização da imagem adicionando timestamp
+              profileImage: updatedData.profile_image ? 
+                `${updatedData.profile_image}?t=${new Date().getTime()}` : 
+                null
+            };
+          });
         
         // Forçar recarregamento da página para atualizar todos os componentes
         window.location.reload();
