@@ -71,7 +71,7 @@ class AuthService {
       const csrfToken = await fetchCsrfToken();
       
       // Usar 'identifier' como parâmetro para permitir login com email ou nome de usuário
-      const response = await fetch(`${API_URL}login/`, {
+      const response = await fetch(`${API_URL}/api/auth/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ class AuthService {
       
       console.log('Dados sendo enviados para o servidor:', JSON.stringify(userData));
       
-      const response = await fetch(`${API_URL}register/`, {
+      const response = await fetch(`${API_URL}/api/auth/register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,7 +172,7 @@ class AuthService {
     try {
       const csrfToken = await fetchCsrfToken();
       
-      await fetch(`${API_URL}logout/`, {
+      await fetch(`${API_URL}/api/auth/logout/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -203,7 +203,7 @@ class AuthService {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
       
-      const response = await fetch(`${API_URL}me/`, {
+      const response = await fetch(`${API_URL}/api/auth/me/`, {
         method: 'GET',
         credentials: 'include',
         headers: headers,
@@ -215,7 +215,7 @@ class AuthService {
           const refreshToken = localStorage.getItem('refreshToken');
           if (refreshToken) {
             try {
-              const refreshResponse = await fetch(`${API_URL}token/refresh/`, {
+              const refreshResponse = await fetch(`${API_URL}/api/auth/token/refresh/`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ class AuthService {
                 
                 // Tentar novamente com o novo token
                 const newHeaders = { ...headers, 'Authorization': `Bearer ${refreshData.access}` };
-                const retryResponse = await fetch(`${API_URL}me/`, {
+                const retryResponse = await fetch(`${API_URL}/api/auth/me/`, {
                   credentials: 'include',
                   headers: newHeaders,
                 });
@@ -264,7 +264,7 @@ class AuthService {
       
       const csrfToken = await fetchCsrfToken();
       
-      const response = await fetch(`${API_URL}token/refresh/`, {
+      const response = await fetch(`${API_URL}/api/auth/token/refresh/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -304,7 +304,7 @@ class AuthService {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
       
-      const response = await fetch(`${API_URL}profile/`, {
+      const response = await fetch(`${API_URL}/api/user/profile/`, {
         method: 'GET',
         credentials: 'include',
         headers: headers,
@@ -320,7 +320,7 @@ class AuthService {
             // Tentar novamente com o novo token
             const accessToken = localStorage.getItem('accessToken');
             const newHeaders = { ...headers, 'Authorization': `Bearer ${accessToken}` };
-            const retryResponse = await fetch(`${API_URL}profile/`, {
+            const retryResponse = await fetch(`${API_URL}/api/user/profile/`, {
               method: 'GET',
               credentials: 'include',
               headers: newHeaders,
