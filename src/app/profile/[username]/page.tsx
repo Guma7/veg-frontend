@@ -76,8 +76,9 @@ export default function ProfilePage({ params }: PageProps) {
           }
   
           // Usar a URL completa do backend
-          console.log('Enviando para URL:', `${API_URL}/api/user/profile`);
-          const response = await fetch(`${API_URL}/api/user/profile`, {
+          console.log('Enviando dados para atualização de perfil: FormData com imagem');
+          console.log('Enviando para URL:', `${API_URL}/api/auth/profile/`);
+          const response = await fetch(`${API_URL}/api/auth/profile/`, {
             method: 'PUT',
             headers: headers,
             body: updatedProfile,
