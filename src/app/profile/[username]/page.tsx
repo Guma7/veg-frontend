@@ -19,7 +19,7 @@ export default function ProfilePage({ params }: PageProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   
   // Importar a variável API_URL
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
   
   const handleSaveProfile = async (updatedProfile: FormData | Partial<UserProfile>) => {
       setIsLoading(true);

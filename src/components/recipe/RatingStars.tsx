@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { FaStar } from 'react-icons/fa'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const RatingContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -71,7 +74,7 @@ export function RatingStars({ recipeId, initialRating = 0, onRatingSubmit, reado
 
     try {
       setIsSubmitting(true)
-      const response = await fetch(`http://localhost:8000/api/recipes/${recipeId}/rate/`, {
+      const response = await fetch(`${API_URL}/api/recipes/${recipeId}/rate/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

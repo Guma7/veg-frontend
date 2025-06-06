@@ -15,6 +15,9 @@ import {
 } from 'chart.js'
 import { Line, Bar } from 'react-chartjs-2'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -77,7 +80,7 @@ export function RecipeStats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/recipes/stats/', {
+        const response = await fetch(`${API_URL}/api/recipes/stats/`, {
           credentials: 'include'
         })
         

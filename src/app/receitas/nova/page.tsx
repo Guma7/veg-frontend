@@ -6,6 +6,9 @@ import styled from 'styled-components'
 import { useAuth } from '../../../contexts/AuthContextFront'
 import { RecipeForm } from '../../../components/recipe/RecipeForm'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
@@ -31,7 +34,7 @@ export default function NewRecipePage() {
 
     try {
       // Obter o token CSRF antes de fazer a requisição
-      await fetch('http://localhost:8000/api/auth/csrf/', {
+      await fetch(`${API_URL}/api/auth/csrf/`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -57,7 +60,7 @@ export default function NewRecipePage() {
         console.log(pair[0] + ': ' + (pair[1] instanceof File ? `Arquivo: ${pair[1].name} (${pair[1].size} bytes)` : pair[1]))
       }
       
-      const response = await fetch('http://localhost:8000/api/recipes/', {
+      const response = await fetch(`${API_URL}/api/recipes/`, {
         method: 'POST',
         credentials: 'include',
         headers: {

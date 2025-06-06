@@ -6,6 +6,9 @@ import styled from 'styled-components'
 import UserRecipesFeed from '../../../components/profile/UserRecipesFeed'
 import { Avatar } from '../../../components/common/Avatar'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const ProfileContainer = styled.div`
   padding: ${props => props.theme.spacing.xl};
   max-width: 800px;
@@ -88,7 +91,7 @@ export default function PublicProfilePage({ params }: PageProps) {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/users/${params.username}/`, {
+      const response = await fetch(`${API_URL}/api/users/${params.username}/`, {
         credentials: 'include'
       })
       

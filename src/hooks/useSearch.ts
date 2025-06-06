@@ -2,6 +2,9 @@ import { useState, useCallback } from 'react'
 import { searchCache } from '../utils/searchCache'
 import { Recipe } from '../types/recipe'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 interface SearchResults {
   exact: Recipe[]
   similar: Recipe[]
@@ -34,7 +37,7 @@ export function useSearch() {
       }
 
       // Se não estiver em cache, faz a requisição
-      const response = await fetch(`http://localhost:8000/api/recipes/search/?${params}`, {
+      const response = await fetch(`${API_URL}/api/recipes/search/?${params}`, {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',

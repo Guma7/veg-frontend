@@ -5,6 +5,9 @@ import styled from 'styled-components'
 import Link from 'next/link'
 import { RecipeCard } from '../recipe/RecipeCard'
 
+// Definição da variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
+
 const Section = styled.section`
   padding: ${props => props.theme.spacing.xl};
 `
@@ -58,7 +61,7 @@ export function FeaturedRecipes() {
 
   const fetchFeaturedRecipes = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      // Usando a variável API_URL já definida no início do arquivo
       const response = await fetch(`${API_URL}/api/recipes/featured/`, {
         method: 'GET',
         headers: {

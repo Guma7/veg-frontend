@@ -5,6 +5,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FaStar } from 'react-icons/fa'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const Card = styled.div`
   background: ${props => props.theme.colors.background.paper};
   border-radius: ${props => props.theme.borderRadius.lg};
@@ -50,9 +53,10 @@ interface RecipeCardProps {
     rating?: number
   }
   className?: string
+  compact?: boolean
 }
 
-export function RecipeCard({ recipe, className }: RecipeCardProps) {
+export function RecipeCard({ recipe, className, compact }: RecipeCardProps) {
   // Garantir que o slug seja usado corretamente para o link da receita
   const recipeLink = `/receitas/${recipe.slug || recipe.id}`;
   
@@ -61,7 +65,7 @@ export function RecipeCard({ recipe, className }: RecipeCardProps) {
       <Card className={className}>
         <ImageContainer>
           <Image
-            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `http://127.0.0.1:8000${recipe.image}` : `http://127.0.0.1:8000/${recipe.image}`) : '/default-recipe.jpg'}
+            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
             alt={recipe.title}
             fill
             style={{ objectFit: 'cover' }}
@@ -82,3 +86,5 @@ export function RecipeCard({ recipe, className }: RecipeCardProps) {
     </Link>
   )
 }
+
+export default RecipeCard

@@ -4,6 +4,9 @@ import styled from 'styled-components'
 import { UserProfile } from '../../types/user'
 import { Avatar } from '../common/Avatar'
 
+// Definição da variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
+
 const Modal = styled.div`
   position: fixed;
   top: 0;
@@ -104,7 +107,7 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
     try {
       // Obter o token CSRF antes de enviar o formulário
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        // Usando a variável API_URL já definida no início do arquivo
         console.log('Obtendo token CSRF da URL:', `${API_URL}/api/auth/csrf/`);
         
         const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {

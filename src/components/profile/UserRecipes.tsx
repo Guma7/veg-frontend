@@ -6,6 +6,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { formatOption } from '../../utils/formatters'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const RecipeGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -92,7 +95,7 @@ export default function UserRecipes({ userId }: UserRecipesProps) {
 
   const fetchUserRecipes = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/recipes/?author=${userId}`, {
+      const response = await fetch(`${API_URL}/api/recipes/?author=${userId}`, {
         credentials: 'include'
       })
       if (response.ok) {
@@ -106,7 +109,7 @@ export default function UserRecipes({ userId }: UserRecipesProps) {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/recipes/categories/`, {
+      const response = await fetch(`${API_URL}/api/recipes/categories/`, {
         credentials: 'include'
       })
       if (response.ok) {
@@ -145,7 +148,7 @@ export default function UserRecipes({ userId }: UserRecipesProps) {
             <RecipeCard>
               <RecipeImage>
                 <Image
-                  src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `http://localhost:8000${recipe.image}` : `http://localhost:8000/${recipe.image}`) : '/default-recipe.jpg'}
+                  src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
                   alt={recipe.name}
                   fill
                   style={{ objectFit: 'cover' }}

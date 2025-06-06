@@ -1,3 +1,6 @@
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 export interface Recipe {
   id: string;
   title: string;
@@ -64,7 +67,7 @@ export async function searchRecipes(params: URLSearchParams): Promise<SearchResu
   const cachedResult = cache.get(cacheKey)
   if (cachedResult) return cachedResult
 
-  const response = await fetch(`http://localhost:8000/api/recipes/search/?${params}`, {
+  const response = await fetch(`${API_URL}/api/recipes/search/?${params}`, {
     method: 'GET',
     mode: 'cors',
     credentials: 'include',

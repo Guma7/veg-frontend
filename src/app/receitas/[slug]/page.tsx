@@ -13,6 +13,9 @@ import YouTubePlayer from '../../../components/recipes/YouTubePlayer'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const RecipeContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
@@ -295,7 +298,7 @@ export default function RecipePage({ params }: PageProps) {
     <RecipeContainer>
       <RecipeImage>
         <img 
-          src={recipe.image_url ? recipe.image_url : recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `http://localhost:8000${recipe.image}` : `http://localhost:8000/${recipe.image}`) : '/default-recipe.jpg'} 
+          src={recipe.image_url ? recipe.image_url : recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'} 
           alt={recipe.title} 
           onError={(e) => {
             const target = e.target as HTMLImageElement

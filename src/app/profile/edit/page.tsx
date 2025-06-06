@@ -10,6 +10,9 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const EditCard = styled(Card)`
   max-width: 600px;
   margin: ${props => props.theme.spacing['3xl']} auto;
@@ -58,7 +61,7 @@ export default function EditProfile() {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/profiles/${user?.id}/`, {
+      const response = await fetch(`${API_URL}/api/profiles/${user?.id}/`, {
         credentials: 'include'
       })
       if (response.ok) {
@@ -86,7 +89,7 @@ export default function EditProfile() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/profiles/${user?.id}/`, {
+      const response = await fetch(`${API_URL}/api/profiles/${user?.id}/`, {
         method: 'PATCH',
         body: formDataToSend,
         credentials: 'include'

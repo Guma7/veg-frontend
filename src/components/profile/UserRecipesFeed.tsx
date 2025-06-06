@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { RecipeCard } from '../recipe/RecipeCard'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 interface Recipe {
   id: string
   title: string
@@ -50,7 +53,7 @@ export default function UserRecipesFeed({ userId }: { userId: string }) {
     setLoading(true)
     try {
       const response = await fetch(
-        `http://localhost:8000/api/recipes/user/${userId}/?category=${filter}`,
+        `${API_URL}/api/recipes/user/${userId}/?category=${filter}`,
         { credentials: 'include' }
       )
       if (response.ok) {

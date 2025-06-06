@@ -13,6 +13,9 @@ import Link from 'next/link'
 import { deleteRecipe } from '../../services/recipeService'
 import { Loading } from '../../components/ui/Loading'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const ProfileContainer = styled.div`
   padding: ${props => props.theme.spacing.xl};
   max-width: 1200px;
@@ -290,7 +293,7 @@ export default function ProfilePage() {
 
   const fetchUserRecipes = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/recipes/user/${user?.id}/`, {
+      const response = await fetch(`${API_URL}/api/recipes/user/${user?.id}/`, {
         credentials: 'include'
       })
       if (response.ok) {
@@ -352,7 +355,7 @@ export default function ProfilePage() {
         'FormData com ' + (profileData.has('profile_image') ? 'imagem' : 'sem imagem') : 
         'JSON data')
       
-      const response = await fetch('http://localhost:8000/api/auth/profile/', {
+      const response = await fetch(`${API_URL}/api/auth/profile/`, {
         method: 'PUT',
         credentials: 'include',
         body: profileData instanceof FormData ? profileData : JSON.stringify(profileData),
@@ -481,7 +484,7 @@ export default function ProfilePage() {
                 <RecipeCard key={recipe.id}>
                   <Link href={`/receitas/${recipe.slug || recipe.id}`} style={{ textDecoration: 'none' }}>
                     <RecipeImage 
-                      src={recipe.image_url || (recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `http://localhost:8000${recipe.image}` : `http://localhost:8000/${recipe.image}`) : '/default-recipe.svg')}
+                      src={recipe.image_url || (recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.svg')}
                       alt={recipe.title} 
                       onError={(e) => {
                         const target = e.target as HTMLImageElement

@@ -11,6 +11,9 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import styled from 'styled-components'
 
+// Definição da variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
+
 const FormContainer = styled(Card)`
   max-width: 800px;
   margin: ${props => props.theme.spacing['3xl']} auto;
@@ -78,7 +81,7 @@ export default function CriarReceita() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/recipes/categories/', {
+      const response = await fetch(`${API_URL}/api/recipes/categories/`, {
         credentials: 'include'
       })
       if (response.ok) {
@@ -108,7 +111,7 @@ export default function CriarReceita() {
     })
 
     try {
-      const response = await fetch('http://localhost:8000/api/recipes/', {
+      const response = await fetch(`${API_URL}/api/recipes/`, {
         method: 'POST',
         body: formDataToSend,
         credentials: 'include'

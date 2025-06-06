@@ -4,6 +4,9 @@ import { Recipe } from '../../types/recipe'
 import RecipeCard from './RecipeCard'
 import { LoadingState } from '../common/FeedbackStates'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const Container = styled.div`
   margin-top: 3rem;
 `
@@ -31,7 +34,7 @@ export default function SimilarRecipes({ recipeId }: Props) {
     const fetchSimilarRecipes = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/recipes/${recipeId}/similar/`
+          `${API_URL}/api/recipes/${recipeId}/similar/`
         )
         if (response.ok) {
           const data = await response.json()
@@ -55,7 +58,17 @@ export default function SimilarRecipes({ recipeId }: Props) {
       <Title>Receitas Similares</Title>
       <Grid>
         {recipes.map(recipe => (
-          <RecipeCard key={recipe.id} recipe={recipe} compact />
+          <RecipeCard 
+            key={recipe.id} 
+            recipe={{
+              id: recipe.id || 0, // Garantir que id seja fornecido
+              title: recipe.title,
+              image: recipe.image_url || recipe.image || '/default-recipe.jpg',
+              slug: recipe.slug,
+              rating: recipe.averageRating
+            }} 
+            compact 
+          />
         ))}
       </Grid>
     </Container>

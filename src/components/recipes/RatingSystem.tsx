@@ -3,6 +3,9 @@ import styled from 'styled-components'
 import { useState } from 'react'
 import { Alert } from '../ui/Alert'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const RatingContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -72,7 +75,7 @@ export default function RatingSystem({
       setLoading(true)
       setError('')
 
-      const response = await fetch(`http://localhost:8000/api/recipes/${recipeId}/rate/`, {
+      const response = await fetch(`${API_URL}/api/recipes/${recipeId}/rate/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +101,7 @@ export default function RatingSystem({
 
   return (
     <RatingContainer>
-      {error && <Alert variant="error">{error}</Alert>}
+      {error && <Alert $variant="error">{error}</Alert>}
       
       <RatingInfo>
         <span>Avaliação média: <AverageRating>{averageRating.toFixed(1)}</AverageRating></span>

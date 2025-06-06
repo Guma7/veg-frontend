@@ -3,6 +3,9 @@
 import styled from 'styled-components'
 import { useState, useEffect } from 'react'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const SuggestionsContainer = styled.div`
   position: absolute;
   top: 100%;
@@ -39,7 +42,7 @@ export function TagSuggestions({ query, onSelect }: TagSuggestionsProps) {
       if (query.length < 2) return setSuggestions([])
 
       try {
-        const response = await fetch(`http://localhost:8000/api/tags/suggest/?q=${query}`, {
+        const response = await fetch(`${API_URL}/api/tags/suggest/?q=${query}`, {
           credentials: 'include'
         })
         

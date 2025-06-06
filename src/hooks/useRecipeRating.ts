@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 interface RatingData {
   averageRating: number;
   totalRatings: number;
@@ -17,7 +20,7 @@ export function useRecipeRating(recipeId: number) {
 
   const fetchRatingData = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/recipes/${recipeId}/ratings/`, {
+      const response = await fetch(`${API_URL}/api/recipes/${recipeId}/ratings/`, {
         credentials: 'include'
       })
       

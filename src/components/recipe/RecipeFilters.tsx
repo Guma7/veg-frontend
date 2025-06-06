@@ -6,6 +6,9 @@ import { Input } from '../ui/Input'
 import { Button } from '../ui/Button'
 import { debounce } from 'lodash'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 export interface RecipeFiltersType {
   generalSearch: string
   title: string
@@ -117,7 +120,7 @@ export function RecipeFilters({ onFilterChange }: { onFilterChange: (filters: Re
 
   const fetchGenreSuggestions = async (query: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/recipes/genres/suggest/?query=${query}`)
+      const response = await fetch(`${API_URL}/api/recipes/genres/suggest/?query=${query}`)
       if (response.ok) {
         const data = await response.json()
         setGenreSuggestions(data)

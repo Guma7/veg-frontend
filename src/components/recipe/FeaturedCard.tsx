@@ -5,6 +5,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FaStar, FaClock, FaUtensils } from 'react-icons/fa'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const Card = styled.div`
   position: relative;
   height: 400px;
@@ -56,7 +59,7 @@ export function FeaturedCard({ recipe }: FeaturedCardProps) {
     <Link href={`/receitas/${recipe.id}`} style={{ textDecoration: 'none' }}>
       <Card>
         <Image
-            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `http://localhost:8000${recipe.image}` : `http://localhost:8000/${recipe.image}`) : '/default-recipe.jpg'}
+            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
             alt={recipe.title}
             fill
             style={{ objectFit: 'cover' }}

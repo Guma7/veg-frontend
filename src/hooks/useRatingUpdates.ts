@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 export function useRatingUpdates(recipeId: string) {
   const [ratings, setRatings] = useState({ average: 0, total: 0 })
 
   useEffect(() => {
     const eventSource = new EventSource(
-      `http://localhost:8000/api/recipes/${recipeId}/rating-updates/`
+      `${API_URL}/api/recipes/${recipeId}/rating-updates/`
     )
 
     eventSource.onmessage = (event) => {

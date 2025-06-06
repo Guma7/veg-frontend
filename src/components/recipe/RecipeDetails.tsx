@@ -6,6 +6,9 @@ import { RatingSystem } from './RatingSystem'
 import { YouTubePreview } from './YouTubePreview'
 import { formatOption } from '../../utils/formatters'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const RecipeContainer = styled.article`
   background: ${props => props.theme.colors.background.paper};
   border-radius: ${props => props.theme.borderRadius.lg};
@@ -62,7 +65,7 @@ export function RecipeDetails({ recipe }: RecipeDetailsProps) {
     <RecipeContainer>
       <ImageContainer>
         <Image
-            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `http://localhost:8000${recipe.image}` : `http://localhost:8000/${recipe.image}`) : '/default-recipe.jpg'}
+            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
             alt={recipe.title}
             fill
             style={{ objectFit: 'cover' }}

@@ -1,12 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
- import { useAuth } from '../../contexts/AuthContextFront'
+import { useAuth } from '../../contexts/AuthContextFront'
 import { Avatar } from '../common/Avatar'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { Button } from '../ui/Button'
 import { Alert } from '../ui/Alert'
 import { FiEdit2, FiTrash2, FiChevronDown } from 'react-icons/fi'
+
+// Definir a variável API_URL uma única vez no início do arquivo
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
 
 const CommentsSection = styled.div`
   margin-top: ${props => props.theme.spacing.xl};
@@ -117,12 +122,11 @@ export function Comments({ recipeId }: CommentsProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newComment.trim() || isSubmitting || !user) return
-
+    
     setIsSubmitting(true)
     setError(null)
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(`${API_URL}/api/recipes/${recipeId}/comments/`, {
         method: 'POST',
         headers: {
@@ -175,7 +179,6 @@ export function Comments({ recipeId }: CommentsProps) {
     
     try {
       // Usar a URL da API com base no ambiente
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(`${API_URL}/api/recipes/${recipeId}/comments/?page=${pageNum}`, {
         credentials: 'include'
       })
@@ -208,7 +211,7 @@ export function Comments({ recipeId }: CommentsProps) {
     setError(null)
 
     try {
-      const response = await fetch(`http://localhost:8000/api/recipes/${recipeId}/comments/${commentId}/`, {
+      const response = await fetch(`${API_URL}/api/recipes/${recipeId}/comments/${commentId}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -258,7 +261,7 @@ export function Comments({ recipeId }: CommentsProps) {
     if (!confirm('Tem certeza que deseja excluir este comentário?')) return
 
     try {
-      const response = await fetch(`http://localhost:8000/api/recipes/${recipeId}/comments/${commentId}/`, {
+      const response = await fetch(`${API_URL}/api/recipes/${recipeId}/comments/${commentId}/`, {
         method: 'DELETE',
         credentials: 'include',
       })
