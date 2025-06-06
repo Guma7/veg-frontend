@@ -105,6 +105,9 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
     setError(null);
     
     try {
+      // Preparar os headers para a requisição
+      const headers: Record<string, string> = {};
+      
       // Obter o token CSRF antes de enviar o formulário
       try {
         // Usando a variável API_URL já definida no início do arquivo
@@ -123,23 +126,28 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
         } else {
           const csrfData = await csrfResponse.json();
           console.log('Resposta do servidor CSRF:', csrfData);
+          
+          // Adicionar o token CSRF obtido da resposta aos headers
+          if (csrfData && csrfData.csrfToken) {
+            headers['X-CSRFToken'] = csrfData.csrfToken;
+            console.log('Token CSRF obtido da resposta JSON e adicionado aos headers');
+          }
         }
       } catch (error) {
         console.error('Erro ao obter token CSRF:', error);
       }
       
-      // Preparar os headers para a requisição
-      const headers: Record<string, string> = {};
-      
-      // Adicionar o token CSRF se disponível
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('csrftoken='))
-        ?.split('=')[1] || '';
-      
-      if (csrfToken) {
-        headers['X-CSRFToken'] = csrfToken;
-        console.log('Token CSRF adicionado ao header:', csrfToken);
+      // Adicionar o token CSRF do cookie se disponível e não foi obtido da resposta
+      if (!headers['X-CSRFToken']) {
+        const csrfToken = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('csrftoken='))
+          ?.split('=')[1] || '';
+        
+        if (csrfToken) {
+          headers['X-CSRFToken'] = csrfToken;
+          console.log('Token CSRF do cookie adicionado ao header:', csrfToken);
+        }
       }
       
       // Adicionar o token de autorização JWT se disponível

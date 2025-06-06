@@ -312,7 +312,7 @@ export default function RecipePage({ params }: PageProps) {
         <Title>{recipe.title}</Title>
         
         <AuthorInfo>
-          <a href="http://localhost:3001/profile" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: 'inherit' }}>
+          <a href="https://vegworld.onrender.com/profile" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: 'inherit' }}>
             <div>
               <p>Por {recipe.author?.username || 'Autor desconhecido'}</p>
             </div>

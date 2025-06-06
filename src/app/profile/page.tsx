@@ -344,6 +344,32 @@ export default function ProfilePage() {
       
       if (csrfToken) {
         headers['X-CSRFToken'] = csrfToken;
+        console.log('Token CSRF adicionado aos headers:', csrfToken);
+      } else {
+        // Tentar obter o token CSRF diretamente do servidor
+        try {
+          const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
+            method: 'GET',
+            credentials: 'include'
+          });
+          
+          if (csrfResponse.ok) {
+            const csrfData = await csrfResponse.json();
+            if (csrfData.csrfToken) {
+              headers['X-CSRFToken'] = csrfData.csrfToken;
+              console.log('Token CSRF obtido da resposta e adicionado aos headers:', csrfData.csrfToken);
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao obter token CSRF do servidor:', error);
+        }
+      }
+      
+      // Adicionar o token de autorização JWT se disponível
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+        console.log('Token de autorização adicionado aos headers');
       }
       
       if (!(profileData instanceof FormData)) {
@@ -367,10 +393,12 @@ export default function ProfilePage() {
       console.log('Status da resposta:', response.status)
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null)
-        throw new Error(errorData?.detail || 'Erro ao atualizar perfil')
+        const errorText = await response.text();
+        console.error('Resposta de erro completa:', errorText);
+        const errorData = errorText ? JSON.parse(errorText) : null;
+        throw new Error(errorData?.detail || `Erro ao atualizar perfil: ${response.status} ${response.statusText}`)
       }
-
+      
       // Forçar uma pequena pausa para garantir que o servidor processou a imagem
       await new Promise(resolve => setTimeout(resolve, 500))
       

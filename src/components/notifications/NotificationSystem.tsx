@@ -82,7 +82,7 @@ export function NotificationSystem() {
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8000/ws/notifications/')
+    const ws = new WebSocket('wss://veg-backend-rth1.onrender.com/ws/notifications/')
     
     ws.onmessage = (event) => {
       const notification = JSON.parse(event.data)
