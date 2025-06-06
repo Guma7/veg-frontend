@@ -80,7 +80,7 @@ const ErrorMessage = styled.div`
 
 interface Props {
   profile: UserProfile
-  onSave: (profile: FormData | Partial<UserProfile>) => void
+  onSave: (profile: FormData | Partial<UserProfile>, headers?: Record<string, string>) => void
   onClose: () => void
 }
 
@@ -128,6 +128,28 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
         console.error('Erro ao obter token CSRF:', error);
       }
       
+      // Preparar os headers para a requisição
+      const headers: Record<string, string> = {};
+      
+      // Adicionar o token CSRF se disponível
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1] || '';
+      
+      if (csrfToken) {
+        headers['X-CSRFToken'] = csrfToken;
+        console.log('Token CSRF adicionado ao header:', csrfToken);
+      }
+      
+      // Adicionar o token de autorização JWT se disponível
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+        console.log('Token de autorização adicionado ao header');
+      }
+      
+      console.log('Headers enviados:', headers);
       const formDataToSend = new FormData();
       formDataToSend.append('description', formData.description);
       
@@ -149,8 +171,11 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
         socialLinks: formData.social_links
       });
       
-      // Chamar a função onSave com os dados do formulário
-      await onSave(formDataToSend);
+      // Chamar a função onSave com os dados do formulário e os headers
+      await onSave(formDataToSend, headers);
+      
+      // Adicionar um log para confirmar que a função foi chamada
+      console.log('Função onSave chamada com sucesso com headers:', Object.keys(headers).join(', '));
     } catch (error) {
       console.error('Erro detalhado ao salvar perfil:', error);
       setError(error instanceof Error ? error.message : 'Erro ao salvar perfil. Tente novamente.');

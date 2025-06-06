@@ -21,7 +21,7 @@ export default function ProfilePage({ params }: PageProps) {
   // Importar a variável API_URL
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
   
-  const handleSaveProfile = async (updatedProfile: FormData | Partial<UserProfile>) => {
+  const handleSaveProfile = async (updatedProfile: FormData | Partial<UserProfile>, customHeaders?: Record<string, string>) => {
       setIsLoading(true);
       try {
         // Se for FormData, enviar como multipart/form-data
@@ -66,13 +66,26 @@ export default function ProfilePage({ params }: PageProps) {
             }
           }
   
-          // Adicionar o token CSRF ao header
-          const headers: Record<string, string> = {};
-          if (csrfToken) {
+          // Usar headers personalizados se fornecidos, ou criar novos
+          const headers: Record<string, string> = customHeaders || {};
+          
+          // Adicionar o token CSRF ao header se não estiver presente nos headers personalizados
+          if (csrfToken && !headers['X-CSRFToken']) {
             headers['X-CSRFToken'] = csrfToken;
             console.log('Token CSRF adicionado ao header:', csrfToken);
-          } else {
+          } else if (!headers['X-CSRFToken']) {
             console.warn('Nenhum token CSRF disponível para adicionar ao header');
+          }
+  
+          // Adicionar o token de autorização JWT se não estiver presente nos headers personalizados
+          if (!headers['Authorization']) {
+            const accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+              headers['Authorization'] = `Bearer ${accessToken}`;
+              console.log('Token de autorização adicionado ao header');
+            } else {
+              console.warn('Nenhum token de autorização disponível');
+            }
           }
   
           // Usar a URL completa do backend
@@ -85,7 +98,8 @@ export default function ProfilePage({ params }: PageProps) {
             credentials: 'include', // Importante para enviar cookies
             // Não definir Content-Type, o navegador vai definir automaticamente com boundary
           });
-          
+  
+          console.log('Headers enviados:', headers);
           console.log('Resposta da API:', response.status, response.statusText);
           
           if (!response.ok) {
