@@ -34,25 +34,60 @@ export default function NewRecipePage() {
 
     try {
       // Obter o token CSRF antes de fazer a requisição
-      await fetch(`${API_URL}/api/auth/csrf/`, {
-        method: 'GET',
-        credentials: 'include'
-      })
+      let csrfToken = '';
       
-      // Obter o token CSRF do cookie
-      const getCsrfToken = (): string => {
-        const cookie = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('csrftoken='))
-          
-        if (cookie) {
-          return cookie.split('=')[1]
-        }
+      try {
+        const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
+          method: 'GET',
+          credentials: 'include'
+        });
         
-        return ''
+        if (csrfResponse.ok) {
+          const csrfData = await csrfResponse.json();
+          if (csrfData && csrfData.csrfToken) {
+            csrfToken = csrfData.csrfToken;
+            console.log('Token CSRF obtido da resposta JSON:', csrfToken);
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao obter token CSRF do servidor:', error);
       }
       
-      const csrfToken = getCsrfToken()
+      // Fallback: obter o token CSRF do cookie se não foi obtido da resposta
+      if (!csrfToken) {
+        const getCsrfToken = (): string => {
+          const cookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            
+          if (cookie) {
+            return cookie.split('=')[1]
+          }
+          
+          return ''
+        }
+        
+        csrfToken = getCsrfToken();
+        if (csrfToken) {
+          console.log('Token CSRF obtido do cookie:', csrfToken);
+        }
+      }
+      
+      // Verificar se o token foi obtido
+      if (!csrfToken) {
+        throw new Error('Não foi possível obter o token CSRF');
+      }
+      
+      // Adicionar o token de autorização JWT se disponível
+      const headers: Record<string, string> = {
+        'X-CSRFToken': csrfToken
+      };
+      
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+        console.log('Token de autorização adicionado aos headers');
+      }
       
       // Log do FormData para depuração
       console.log('Enviando dados para o servidor:')
@@ -63,9 +98,7 @@ export default function NewRecipePage() {
       const response = await fetch(`${API_URL}/api/recipes/`, {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'X-CSRFToken': csrfToken
-        },
+        headers: headers,
         // Não definir Content-Type ao usar FormData, o navegador configurará automaticamente
         // incluindo o boundary necessário para multipart/form-data
         body: formData

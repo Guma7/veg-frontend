@@ -25,7 +25,30 @@ export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
   
   // Adicionar token CSRF para métodos que modificam dados
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method || '')) {
-    const csrfToken = getCookie('csrftoken');
+    let csrfToken = '';
+    
+    // Tentar obter o token CSRF da resposta JSON primeiro
+    try {
+      const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      
+      if (csrfResponse.ok) {
+        const csrfData = await csrfResponse.json();
+        if (csrfData && csrfData.csrfToken) {
+          csrfToken = csrfData.csrfToken;
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao obter token CSRF do servidor:', error);
+    }
+    
+    // Fallback: obter do cookie se não foi obtido da resposta
+    if (!csrfToken) {
+      csrfToken = getCookie('csrftoken');
+    }
+    
     if (csrfToken) {
       headers.set('X-CSRFToken', csrfToken);
     }
