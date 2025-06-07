@@ -142,62 +142,37 @@ export function RecipeForm({ onSubmit, initialData, isEditing = false }: RecipeF
     e.preventDefault()
     
     // Verificar se todos os campos obrigatórios estão preenchidos
-    const isValid = requiredFields.filter(field => field !== 'image').every(field => {
-      const value = formData[field as keyof RecipeFormData]
-      return value !== undefined && value !== ''
+    const missingFields = requiredFields.filter(field => {
+      // Verificar se o campo está vazio
+      if (field === 'image') {
+        return !formData.image
+      }
+      return !formData[field as keyof RecipeFormData]
     })
     
-    // Verificar especificamente se a imagem foi selecionada (apenas para novas receitas)
-    if (!isEditing && !formData.image) {
+    if (missingFields.length > 0) {
+      // Exibir mensagem de erro
+      setErrorMessage(`Por favor, preencha os seguintes campos obrigatórios: ${missingFields.join(', ')}`)
       setShowValidationMessage(true)
-      setErrorMessage("É necessário selecionar uma imagem para a receita. O backend exige pelo menos uma imagem.")
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
     
-    if (!isValid) {
-      setShowValidationMessage(true)
-      setErrorMessage("Por favor, preencha todos os campos obrigatórios marcados com *")
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
-    }
-    
-    // Verificar tamanho da imagem se ela existir
-    if (formData.image && formData.image.size > 5 * 1024 * 1024) { // 5MB em bytes
-      setErrorMessage("A imagem selecionada excede o tamanho máximo permitido de 5MB. Por favor, selecione uma imagem menor.")
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
-    }
-    
-    // Adicionar log para depuração
-    console.log('Preparando dados para envio ao servidor...')
-    
+    // Criar um objeto FormData para enviar os dados, incluindo a imagem
     const formDataToSend = new FormData()
-    
-    // Mapeamento dos campos para garantir compatibilidade com o backend
-    const fieldMapping: Record<string, string> = {
-      // Campos livres - podem aceitar qualquer entrada do usuário
-      'name': 'title',  // 'name' deve ser enviado como 'title' para o backend
-      'genre': 'genre', 
-      'doesNotContain': 'does_not_contain',
-      'traditional': 'traditional',
-      'ingredients': 'ingredients',
-      'instructions': 'instructions',
-      'youtubeUrl': 'youtube_link',  // Corrigido para youtube_link conforme modelo no backend
-      
-      // Campos de seleção - valores pré-definidos
-      'recipeClass': 'recipe_class',
-      'style': 'style',
-      'nutritionalLevel': 'nutritional_level',
-      
-      // Outros campos
-      'image': 'image'
-    }
-    
-    // Lista para verificar se todos os campos obrigatórios foram adicionados ao FormData
     const camposAdicionados: string[] = []
     
+    // Mapeamento de nomes de campos do frontend para o backend
+    const fieldMapping: Record<string, string> = {
+      recipeClass: 'recipe_class',
+      nutritionalLevel: 'nutritional_level',
+      doesNotContain: 'does_not_contain',
+      youtubeUrl: 'youtube_link'
+    }
+    
+    // Adicionar cada campo ao FormData
     Object.entries(formData).forEach(([key, value]) => {
+      // Obter o nome do campo no backend
       const backendKey = fieldMapping[key] || key
       
       // Campos de seleção - enviar exatamente o valor selecionado
@@ -284,6 +259,15 @@ export function RecipeForm({ onSubmit, initialData, isEditing = false }: RecipeF
                   }
                 })
               }
+            }
+          } else if (error.response.status === 403) {
+            // Tratamento específico para erro 403 (Forbidden/CSRF)
+            if (data?.detail && data.detail.includes('CSRF')) {
+              errorMsg += "\nMensagem: Erro de validação CSRF. Por favor, recarregue a página e tente novamente."
+              errorMsg += "\nDetalhes: " + data.detail
+              console.error('Erro de CSRF detectado:', data)
+            } else {
+              errorMsg += "\nMensagem: " + (data?.detail || JSON.stringify(data))
             }
           } else {
             // Para outros códigos de status

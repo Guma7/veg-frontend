@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation'
 import styled from 'styled-components'
 import { useAuth } from '../../../contexts/AuthContextFront'
 import { RecipeForm } from '../../../components/recipe/RecipeForm'
-
-// Definir a variável API_URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+import { createRecipe } from '../../../services/recipeService'
 
 const Container = styled.div`
   max-width: 800px;
@@ -26,87 +24,30 @@ export default function NewRecipePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: FormData) => {
     if (!user) return
 
     setLoading(true)
     setError('')
 
     try {
-      // Obter o token CSRF antes de fazer a requisição
-      await fetch(`${API_URL}/api/auth/csrf/`, {
-        method: 'GET',
-        credentials: 'include'
-      })
+      console.log('Iniciando criação de receita usando o serviço atualizado...')
       
-      // Obter o token CSRF do cookie
-      const getCsrfToken = (): string => {
-        const cookie = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('csrftoken='))
-          
-        if (cookie) {
-          return cookie.split('=')[1]
-        }
-        
-        return ''
+      // Usar o serviço de criação de receita que já inclui a lógica de CSRF
+      const response = await createRecipe(formData)
+      
+      console.log('Receita criada com sucesso:', response)
+      
+      // Redirecionar para a página da receita
+      if (response && response.slug) {
+        router.push(`/receitas/${response.slug}`)
+      } else {
+        router.push('/receitas')
       }
-      
-      const csrfToken = getCsrfToken()
-      
-      // Log do FormData para depuração
-      console.log('Enviando dados para o servidor:')
-      for (const pair of formData.entries()) {
-        console.log(pair[0] + ': ' + (pair[1] instanceof File ? `Arquivo: ${pair[1].name} (${pair[1].size} bytes)` : pair[1]))
-      }
-      
-      const response = await fetch(`${API_URL}/api/recipes/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'X-CSRFToken': csrfToken
-        },
-        // Não definir Content-Type ao usar FormData, o navegador configurará automaticamente
-        // incluindo o boundary necessário para multipart/form-data
-        body: formData
-      })
-      
-      // Log da resposta para depuração
-      console.log('Resposta do servidor:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries([...response.headers])
-      })
-
-      if (!response.ok) {
-        let errorData;
-        try {
-          // Tenta obter o corpo da resposta como JSON
-          errorData = await response.json()
-          console.error('Erro ao criar receita:', errorData)
-        } catch (jsonError) {
-          console.error('Erro ao processar resposta JSON:', jsonError)
-          // Se não conseguir processar como JSON, cria um objeto de erro com o status
-          errorData = { status: response.status, message: 'Erro ao processar resposta do servidor' }
-        }
-        
-        // Cria um objeto de erro personalizado com mais informações
-        const errorObj: any = new Error(errorData?.detail || 'Erro ao criar receita')
-        errorObj.response = {
-          status: response.status,
-          data: errorData,
-          json: async () => errorData
-        }
-        throw errorObj
-      }
-
-      const data = await response.json()
-      router.push(`/receitas/${data.slug}`)
-      // Redirecionando para o slug em vez do ID para corresponder à rota correta
     } catch (error: any) {
-      console.error('Erro completo:', error)
+      console.error('Erro completo ao criar receita:', error)
       
-      // Passa o erro completo para o componente RecipeForm para tratamento detalhado
+      // Se o erro tiver uma resposta, propaga para o componente RecipeForm tratar
       if (error.response) {
         throw error // Propaga o erro com os detalhes da resposta
       } else {
