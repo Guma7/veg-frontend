@@ -7,8 +7,6 @@ import { RecipeCard } from '../../components/recipe/RecipeCard'
 import { Pagination } from '../../components/ui/Pagination'
 import { debounce } from 'lodash'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com'
-
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -106,7 +104,7 @@ export default function RecipesPage() {
       })
 
       // Adicionar um timestamp para evitar cache do navegador
-      const requestUrl = `${API_URL}/api/recipes/search/?${params}`
+      const requestUrl = `http://127.0.0.1:8000/api/recipes/search/?${params}`
       
       const response = await fetch(requestUrl, {
         method: 'GET',
