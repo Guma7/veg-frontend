@@ -59,15 +59,10 @@ export function FeaturedCard({ recipe }: FeaturedCardProps) {
     <Link href={`/receitas/${recipe.id}`} style={{ textDecoration: 'none' }}>
       <Card>
         <Image
-            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.png'}
+            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
             alt={recipe.title}
             fill
             style={{ objectFit: 'cover' }}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.onerror = null;
-              target.src = '/default-recipe.png';
-            }}
           />
         <ImageOverlay />
         <Content>

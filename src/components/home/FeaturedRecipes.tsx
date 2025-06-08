@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { RecipeCard } from '../recipe/RecipeCard'
 
 // Definição da variável API_URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
 
 const Section = styled.section`
   padding: ${props => props.theme.spacing.xl};

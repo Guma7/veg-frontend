@@ -12,7 +12,7 @@ import { useEffect } from 'react'
 import styled from 'styled-components'
 
 // Definição da variável API_URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
 
 const FormContainer = styled(Card)`
   max-width: 800px;

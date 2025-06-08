@@ -63,7 +63,7 @@ export default function SimilarRecipes({ recipeId }: Props) {
             recipe={{
               id: recipe.id || 0, // Garantir que id seja fornecido
               title: recipe.title,
-              image: recipe.image_url || recipe.image || '/default-recipe.png',
+              image: recipe.image_url || recipe.image || '/default-recipe.jpg',
               slug: recipe.slug,
               rating: recipe.averageRating
             }} 
