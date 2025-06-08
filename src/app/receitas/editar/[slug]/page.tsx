@@ -9,7 +9,7 @@ import { RecipeForm } from '../../../../components/recipe/RecipeForm'
 import { getRecipeBySlug, updateRecipe } from '../../../../services/recipeService'
 
 // Definição da variável API_URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
 
 const Container = styled.div`
   max-width: 800px;

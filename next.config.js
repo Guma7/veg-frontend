@@ -18,14 +18,4 @@ const nextConfig = {
   },
 };
 
-module.exports = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'veg-backend-rth1.onrender.com',
-        pathname: '/media/**',
-      },
-    ],
-  },
-};
+module.exports = nextConfig;
