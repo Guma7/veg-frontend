@@ -90,7 +90,7 @@ export default function UserRecipesFeed({ userId }: { userId: string }) {
               id: recipe.id,
               title: recipe.title,
               slug: recipe.slug,
-              image: recipe.image_url || recipe.image || '/default-recipe.jpg',
+              image: recipe.image_url || recipe.image || '/default-recipe.png',
               rating: recipe.rating || recipe.averageRating || 0
             }} />
           ))}
