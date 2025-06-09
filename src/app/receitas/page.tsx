@@ -7,6 +7,9 @@ import { RecipeCard } from '../../components/recipe/RecipeCard'
 import { Pagination } from '../../components/ui/Pagination'
 import { debounce } from 'lodash'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -194,7 +197,7 @@ export default function RecipesPage() {
                 id: recipe.id,
                 title: recipe.title,
                 slug: recipe.slug,
-                image: recipe.image_url || recipe.image,
+                image_url: recipe.image_url ? `${API_URL}${recipe.image_url}` : '/default-recipe.jpg',
                 rating: recipe.averageRating
               }} />
             ))}
@@ -217,7 +220,7 @@ export default function RecipesPage() {
                     id: recipe.id,
                     title: recipe.title,
                     slug: recipe.slug,
-                    image: recipe.image_url || recipe.image,
+                    image_url: recipe.image_url ? `${API_URL}${recipe.image_url}` : '/default-recipe.jpg',
                     rating: recipe.averageRating
                   }} />
                 ))}

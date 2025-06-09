@@ -48,7 +48,7 @@ interface RecipeCardProps {
   recipe: {
     id: string | number
     title: string
-    image: string
+    image_url?: string
     slug?: string
     rating?: number
   }
@@ -65,7 +65,7 @@ export function RecipeCard({ recipe, className, compact }: RecipeCardProps) {
       <Card className={className}>
         <ImageContainer>
           <Image
-            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
+            src={recipe.image_url ? `${API_URL}${recipe.image_url}` : '/default-recipe.jpg'}
             alt={recipe.title}
             fill
             style={{ objectFit: 'cover' }}

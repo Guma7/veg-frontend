@@ -70,6 +70,7 @@ interface Recipe {
   id: number;
   name: string;
   image: string;
+  image_url?: string;
   recipe_class: string;
   style: string;
   genre: string;
@@ -148,7 +149,7 @@ export default function UserRecipes({ userId }: UserRecipesProps) {
             <RecipeCard>
               <RecipeImage>
                 <Image
-                  src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
+                  src={recipe.image_url ? `${API_URL}${recipe.image_url}` : '/default-recipe.jpg'}
                   alt={recipe.name}
                   fill
                   style={{ objectFit: 'cover' }}

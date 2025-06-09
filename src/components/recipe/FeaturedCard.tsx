@@ -47,7 +47,7 @@ interface FeaturedCardProps {
   recipe: {
     id: number;
     title: string;
-    image: string;
+    image_url?: string;
     rating?: number;
     prepTime: string;
     servings: number;
@@ -59,10 +59,15 @@ export function FeaturedCard({ recipe }: FeaturedCardProps) {
     <Link href={`/receitas/${recipe.id}`} style={{ textDecoration: 'none' }}>
       <Card>
         <Image
-            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
+            src={recipe.image_url ? `${API_URL}${recipe.image_url}` : '/default-recipe.jpg'}
             alt={recipe.title}
             fill
             style={{ objectFit: 'cover' }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.src = '/default-recipe.jpg';
+            }}
           />
         <ImageOverlay />
         <Content>
