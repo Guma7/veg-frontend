@@ -517,7 +517,7 @@ export default function ProfilePage() {
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
                         target.onerror = null
-                        target.src = '/default-recipe.svg'
+                        target.src = '/default-recipe.jpg'
                       }}
                     />
                     <RecipeContent>
