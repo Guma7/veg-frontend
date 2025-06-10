@@ -46,20 +46,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (userData) {
         setUser(userData)
       } else {
-        // Se não conseguir obter o usuário, tentar novamente com o token de refresh
+        // Se não conseguir obter o usuário, limpar dados de sessão inválidos
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
           try {
-            // Implementar lógica de refresh token aqui se necessário
-            // Por enquanto, apenas registramos o problema
             console.log('Tentando renovar sessão com refresh token');
+            // Se falhar na renovação, limpar tudo
+            const renewedUser = await auth.getCurrentUser();
+            if (!renewedUser) {
+              throw new Error('Falha na renovação da sessão');
+            }
+            setUser(renewedUser);
           } catch (refreshError) {
             console.error('Erro ao renovar sessão:', refreshError);
+            // Limpar dados de sessão inválidos
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            setUser(null);
           }
+        } else {
+          // Não há refresh token, garantir que não há dados órfãos
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('user');
+          setUser(null);
         }
       }
     } catch (error) {
       console.error('Erro ao verificar autenticação:', error)
+      // Em caso de erro, limpar dados potencialmente corrompidos
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      setUser(null);
     } finally {
       setLoading(false)
     }
@@ -143,9 +162,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       await auth.logout()
+      
+      // Limpar completamente o estado do usuário
       setUser(null)
+      setError(null)
+      
+      // Forçar uma limpeza adicional do localStorage
+      localStorage.clear()
+      
+      // Redirecionar para a página inicial após logout
+      window.location.href = '/';
     } catch (error) {
       console.error('Erro ao fazer logout:', error)
+      
+      // Mesmo com erro, limpar o estado local
+      setUser(null)
+      setError(null)
+      localStorage.clear()
+      window.location.href = '/';
     }
   }
 

@@ -182,6 +182,26 @@ class AuthService {
       });
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
+    } finally {
+      // Limpar todos os dados de sessão independentemente do resultado da requisição
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      
+      // Limpar cookies de sessão
+      document.cookie = 'sessionid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
+      document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
+      
+      // Limpar qualquer cache do navegador relacionado à autenticação
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            if (name.includes('auth') || name.includes('user')) {
+              caches.delete(name);
+            }
+          });
+        });
+      }
     }
   }
 
