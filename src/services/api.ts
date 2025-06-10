@@ -1,5 +1,5 @@
 // Definir a URL da API com fallback para o ambiente de desenvolvimento
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
 
 // Função para obter o token CSRF do cookie
 export const getCookie = (name: string): string => {
