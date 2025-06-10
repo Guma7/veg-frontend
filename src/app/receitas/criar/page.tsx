@@ -12,7 +12,7 @@ import { useEffect } from 'react'
 import styled from 'styled-components'
 
 // Definição da variável API_URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
 
 const FormContainer = styled(Card)`
   max-width: 800px;
@@ -111,19 +111,54 @@ export default function CriarReceita() {
     })
 
     try {
-      const response = await fetch(`${API_URL}/api/recipes/`, {
+      // Obter o token CSRF antes de fazer a requisição
+      await fetch(`${API_URL}/api/auth/csrf/`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      
+      // Obter o token CSRF do cookie
+      const getCsrfToken = (): string => {
+        if (typeof document === 'undefined') return '';
+        
+        const cookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('csrftoken='));
+          
+        if (cookie) {
+          return cookie.split('=')[1];
+        }
+        
+        return '';
+      };
+      
+      const csrfToken = getCsrfToken();
+      console.log('Token CSRF para criar receita:', csrfToken);
+      
+      // Corrigir a URL da API para apontar para o backend correto
+      const apiUrl = 'https://veg-backend-rth1.onrender.com';
+      
+      const response = await fetch(`${apiUrl}/api/recipes/`, {
         method: 'POST',
         body: formDataToSend,
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'X-CSRFToken': csrfToken
+        }
       })
 
       if (response.ok) {
         router.push('/receitas')
       } else {
         const data = await response.json()
-        setError(data.message || 'Erro ao criar receita')
+        console.error('Erro ao criar receita:', data)
+        setError(data.detail || data.message || 'Erro ao criar receita')
       }
     } catch (error) {
+      console.error('Erro completo:', error)
       setError('Erro ao conectar com o servidor')
     } finally {
       setLoading(false)
