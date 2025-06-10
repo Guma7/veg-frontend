@@ -111,32 +111,16 @@ export default function CriarReceita() {
     })
 
     try {
-      // Obter o token CSRF antes de fazer a requisição
-      await fetch(`${API_URL}/api/auth/csrf/`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json'
-        }
-      })
+      // Importar a função fetchCsrfToken do auth.ts
+      const { fetchCsrfToken } = await import('../../../services/auth');
       
-      // Obter o token CSRF do cookie
-      const getCsrfToken = (): string => {
-        if (typeof document === 'undefined') return '';
-        
-        const cookie = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('csrftoken='));
-          
-        if (cookie) {
-          return cookie.split('=')[1];
-        }
-        
-        return '';
-      };
-      
-      const csrfToken = getCsrfToken();
+      // Obter o token CSRF usando a função do auth.ts
+      const csrfToken = await fetchCsrfToken();
       console.log('Token CSRF para criar receita:', csrfToken);
+      
+      if (!csrfToken) {
+        throw new Error('Não foi possível obter o token CSRF');
+      }
       
       // Corrigir a URL da API para apontar para o backend correto
       const apiUrl = 'https://veg-backend-rth1.onrender.com';

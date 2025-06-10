@@ -28,7 +28,7 @@ const getCsrfToken = (): string => {
 };
 
 // Função para obter o token CSRF do servidor de forma síncrona
-const fetchCsrfToken = async (): Promise<string> => {
+export const fetchCsrfToken = async (): Promise<string> => {
   try {
     console.log('Obtendo token CSRF do servidor:', `${API_URL}/api/auth/csrf/`);
     

@@ -1,38 +1,16 @@
-import { Recipe } from '../utils/search';
+import { Recipe } from '../types/recipe'
+import { fetchCsrfToken } from './auth'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com'
 
 export async function createRecipe(recipeData: Partial<Recipe>) {
-  // Obter o token CSRF do cookie
-  const getCsrfToken = (): string => {
-    if (typeof document === 'undefined') return '';
-    
-    const cookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('csrftoken='));
-      
-    if (cookie) {
-      return cookie.split('=')[1];
-    }
-    
-    return '';
-  };
-
-  // Obter o token CSRF antes de fazer a requisição
-  try {
-    await fetch(`${API_URL}/api/auth/csrf/`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-  } catch (error) {
-    console.error('Erro ao obter token CSRF:', error);
-  }
-
-  const csrfToken = getCsrfToken();
+  // Obter o token CSRF usando a função do auth.ts
+  const csrfToken = await fetchCsrfToken();
   console.log('Token CSRF para criar receita:', csrfToken);
+  
+  if (!csrfToken) {
+    throw new Error('Não foi possível obter o token CSRF');
+  }
 
   const response = await fetch(`${API_URL}/api/recipes/`, {
     method: 'POST',
@@ -54,36 +32,13 @@ export async function createRecipe(recipeData: Partial<Recipe>) {
 }
 
 export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
-  // Obter o token CSRF do cookie
-  const getCsrfToken = (): string => {
-    if (typeof document === 'undefined') return '';
-    
-    const cookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('csrftoken='));
-      
-    if (cookie) {
-      return cookie.split('=')[1];
-    }
-    
-    return '';
-  };
-
-  // Obter o token CSRF antes de fazer a requisição
-  try {
-    await fetch(`${API_URL}/api/auth/csrf/`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-  } catch (error) {
-    console.error('Erro ao obter token CSRF:', error);
-  }
-
-  const csrfToken = getCsrfToken();
+  // Obter o token CSRF usando a função do auth.ts
+  const csrfToken = await fetchCsrfToken();
   console.log('Token CSRF para atualizar receita:', csrfToken);
+  
+  if (!csrfToken) {
+    throw new Error('Não foi possível obter o token CSRF');
+  }
 
   const response = await fetch(`${API_URL}/api/recipes/${slug}/`, {
     method: 'PUT',
@@ -105,36 +60,13 @@ export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
 }
 
 export async function uploadRecipeImage(recipeId: string, imageFile: File) {
-  // Obter o token CSRF do cookie
-  const getCsrfToken = (): string => {
-    if (typeof document === 'undefined') return '';
-    
-    const cookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('csrftoken='));
-      
-    if (cookie) {
-      return cookie.split('=')[1];
-    }
-    
-    return '';
-  };
-
-  // Obter o token CSRF antes de fazer a requisição
-  try {
-    await fetch(`${API_URL}/api/auth/csrf/`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-  } catch (error) {
-    console.error('Erro ao obter token CSRF:', error);
-  }
-
-  const csrfToken = getCsrfToken();
+  // Obter o token CSRF usando a função do auth.ts
+  const csrfToken = await fetchCsrfToken();
   console.log('Token CSRF para upload de imagem:', csrfToken);
+  
+  if (!csrfToken) {
+    throw new Error('Não foi possível obter o token CSRF');
+  }
 
   const formData = new FormData()
   formData.append('image', imageFile)
