@@ -43,7 +43,6 @@ interface Recipe {
   id: string;
   title: string;
   image: string;
-  image_url?: string;
   rating: number;
   ingredients: string;
   instructions: string;
@@ -66,7 +65,7 @@ export function RecipeDetails({ recipe }: RecipeDetailsProps) {
     <RecipeContainer>
       <ImageContainer>
         <Image
-            src={recipe.image_url ? `${API_URL}${recipe.image_url}` : '/default-recipe.jpg'}
+            src={recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'}
             alt={recipe.title}
             fill
             style={{ objectFit: 'cover' }}

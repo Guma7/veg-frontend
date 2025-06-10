@@ -1,5 +1,5 @@
 // Definir a URL da API com fallback para o ambiente de desenvolvimento
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
 
 // Função para obter o token CSRF do cookie
 export const getCookie = (name: string): string => {
@@ -25,30 +25,7 @@ export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
   
   // Adicionar token CSRF para métodos que modificam dados
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method || '')) {
-    let csrfToken = '';
-    
-    // Tentar obter o token CSRF da resposta JSON primeiro
-    try {
-      const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
-        method: 'GET',
-        credentials: 'include'
-      });
-      
-      if (csrfResponse.ok) {
-        const csrfData = await csrfResponse.json();
-        if (csrfData && csrfData.csrfToken) {
-          csrfToken = csrfData.csrfToken;
-        }
-      }
-    } catch (error) {
-      console.error('Erro ao obter token CSRF do servidor:', error);
-    }
-    
-    // Fallback: obter do cookie se não foi obtido da resposta
-    if (!csrfToken) {
-      csrfToken = getCookie('csrftoken');
-    }
-    
+    const csrfToken = getCookie('csrftoken');
     if (csrfToken) {
       headers.set('X-CSRFToken', csrfToken);
     }

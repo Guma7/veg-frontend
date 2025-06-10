@@ -298,7 +298,7 @@ export default function RecipePage({ params }: PageProps) {
     <RecipeContainer>
       <RecipeImage>
         <img 
-          src={recipe.image_url ? `${API_URL}${recipe.image_url}` : '/default-recipe.jpg'} 
+          src={recipe.image_url ? recipe.image_url : recipe.image ? (recipe.image.startsWith('http') ? recipe.image : recipe.image.startsWith('/') ? `${API_URL}${recipe.image}` : `${API_URL}/${recipe.image}`) : '/default-recipe.jpg'} 
           alt={recipe.title} 
           onError={(e) => {
             const target = e.target as HTMLImageElement

@@ -5,7 +5,7 @@ import { UserProfile } from '../../types/user'
 import { Avatar } from '../common/Avatar'
 
 // Definição da variável API_URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
 
 const Modal = styled.div`
   position: fixed;

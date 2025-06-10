@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { RecipeCard } from '../recipe/RecipeCard'
 
 // Definição da variável API_URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
 
 const Section = styled.section`
   padding: ${props => props.theme.spacing.xl};
@@ -44,6 +44,7 @@ interface Recipe {
   id: string
   title: string
   slug: string
+  image: string
   image_url?: string
   rating: number
   totalRatings: number
@@ -98,7 +99,7 @@ export function FeaturedRecipes() {
             id: recipe.id,
             title: recipe.title,
             slug: recipe.slug,
-            image_url: recipe.image_url ? `${API_URL}${recipe.image_url}` : '/default-recipe.jpg',
+            image: recipe.image_url || recipe.image,
             rating: recipe.rating
           }} />
         ))}

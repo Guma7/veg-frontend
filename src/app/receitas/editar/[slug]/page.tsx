@@ -9,7 +9,7 @@ import { RecipeForm } from '../../../../components/recipe/RecipeForm'
 import { getRecipeBySlug, updateRecipe } from '../../../../services/recipeService'
 
 // Definição da variável API_URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
 
 const Container = styled.div`
   max-width: 800px;
@@ -82,60 +82,25 @@ export default function EditRecipePage({ params }: PageProps) {
 
     try {
       // Obter o token CSRF antes de fazer a requisição
-      let csrfToken = '';
+      await fetch(`${API_URL}/api/auth/csrf/`, {
+        method: 'GET',
+        credentials: 'include'
+      })
       
-      try {
-        const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
-          method: 'GET',
-          credentials: 'include'
-        });
-        
-        if (csrfResponse.ok) {
-          const csrfData = await csrfResponse.json();
-          if (csrfData && csrfData.csrfToken) {
-            csrfToken = csrfData.csrfToken;
-            console.log('Token CSRF obtido da resposta JSON:', csrfToken);
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao obter token CSRF do servidor:', error);
-      }
-      
-      // Fallback: obter o token CSRF do cookie se não foi obtido da resposta
-      if (!csrfToken) {
-        const getCsrfToken = (): string => {
-          const cookie = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('csrftoken='))
-            
-          if (cookie) {
-            return cookie.split('=')[1]
-          }
+      // Obter o token CSRF do cookie
+      const getCsrfToken = (): string => {
+        const cookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('csrftoken='))
           
-          return ''
+        if (cookie) {
+          return cookie.split('=')[1]
         }
         
-        csrfToken = getCsrfToken();
-        if (csrfToken) {
-          console.log('Token CSRF obtido do cookie:', csrfToken);
-        }
+        return ''
       }
       
-      // Verificar se o token foi obtido
-      if (!csrfToken) {
-        throw new Error('Não foi possível obter o token CSRF');
-      }
-      
-      // Adicionar o token de autorização JWT se disponível
-      const headers: Record<string, string> = {
-        'X-CSRFToken': csrfToken
-      };
-      
-      const accessToken = localStorage.getItem('accessToken');
-      if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-        console.log('Token de autorização adicionado aos headers');
-      }
+      const csrfToken = getCsrfToken()
       
       // Log do FormData para depuração
       console.log('Enviando dados para o servidor:')
@@ -146,7 +111,9 @@ export default function EditRecipePage({ params }: PageProps) {
       const response = await fetch(`${API_URL}/api/recipes/${recipeSlug}/`, {
         method: 'PUT',
         credentials: 'include',
-        headers: headers,
+        headers: {
+          'X-CSRFToken': csrfToken
+        },
         body: formData
       })
 

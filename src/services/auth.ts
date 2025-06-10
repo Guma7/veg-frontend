@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Usar a variável de ambiente para a URL da API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'hhttps://veg-backend-rth1.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-api.onrender.com';
 
 interface UserData {
   username?: string;
