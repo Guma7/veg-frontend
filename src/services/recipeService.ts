@@ -54,12 +54,41 @@ export async function createRecipe(recipeData: Partial<Recipe>) {
 }
 
 export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
+  // Obter o token CSRF do cookie
+  const getCsrfToken = (): string => {
+    if (typeof document === 'undefined') return '';
+    const cookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('csrftoken='));
+    if (cookie) {
+      return cookie.split('=')[1];
+    }
+    return '';
+  };
+
+  // Obter o token CSRF antes de fazer a requisição
+  try {
+    await fetch(`${API_URL}/api/auth/csrf/`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao obter token CSRF:', error);
+  }
+
+  const csrfToken = getCsrfToken();
+  console.log('Token CSRF para atualizar receita:', csrfToken);
+
   const response = await fetch(`${API_URL}/api/recipes/${slug}/`, {
     method: 'PUT',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-CSRFToken': csrfToken
     },
     body: JSON.stringify(recipeData),
   })
