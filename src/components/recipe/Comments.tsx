@@ -211,10 +211,41 @@ export function Comments({ recipeId }: CommentsProps) {
     setError(null)
 
     try {
+      // Obter o token CSRF do cookie
+      const getCsrfToken = (): string => {
+        if (typeof document === 'undefined') return '';
+        
+        const cookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('csrftoken='));
+          
+        if (cookie) {
+          return cookie.split('=')[1];
+        }
+        
+        return '';
+      };
+
+      // Obter o token CSRF antes de fazer a requisição
+      try {
+        await fetch(`${API_URL}/api/auth/csrf/`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+      } catch (error) {
+        console.error('Erro ao obter token CSRF:', error);
+      }
+
+      const csrfToken = getCsrfToken();
+
       const response = await fetch(`${API_URL}/api/recipes/${recipeId}/comments/${commentId}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
         },
         credentials: 'include',
         body: JSON.stringify({ content: editContent.trim() })
@@ -261,9 +292,42 @@ export function Comments({ recipeId }: CommentsProps) {
     if (!confirm('Tem certeza que deseja excluir este comentário?')) return
 
     try {
+      // Obter o token CSRF do cookie
+      const getCsrfToken = (): string => {
+        if (typeof document === 'undefined') return '';
+        
+        const cookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('csrftoken='));
+          
+        if (cookie) {
+          return cookie.split('=')[1];
+        }
+        
+        return '';
+      };
+
+      // Obter o token CSRF antes de fazer a requisição
+      try {
+        await fetch(`${API_URL}/api/auth/csrf/`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+      } catch (error) {
+        console.error('Erro ao obter token CSRF:', error);
+      }
+
+      const csrfToken = getCsrfToken();
+
       const response = await fetch(`${API_URL}/api/recipes/${recipeId}/comments/${commentId}/`, {
         method: 'DELETE',
         credentials: 'include',
+        headers: {
+          'X-CSRFToken': csrfToken
+        }
       })
 
       if (!response.ok) throw new Error('Erro ao excluir comentário')

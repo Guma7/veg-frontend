@@ -57,12 +57,15 @@ export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
   // Obter o token CSRF do cookie
   const getCsrfToken = (): string => {
     if (typeof document === 'undefined') return '';
+    
     const cookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('csrftoken='));
+      
     if (cookie) {
       return cookie.split('=')[1];
     }
+    
     return '';
   };
 
@@ -102,12 +105,46 @@ export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
 }
 
 export async function uploadRecipeImage(recipeId: string, imageFile: File) {
+  // Obter o token CSRF do cookie
+  const getCsrfToken = (): string => {
+    if (typeof document === 'undefined') return '';
+    
+    const cookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('csrftoken='));
+      
+    if (cookie) {
+      return cookie.split('=')[1];
+    }
+    
+    return '';
+  };
+
+  // Obter o token CSRF antes de fazer a requisição
+  try {
+    await fetch(`${API_URL}/api/auth/csrf/`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao obter token CSRF:', error);
+  }
+
+  const csrfToken = getCsrfToken();
+  console.log('Token CSRF para upload de imagem:', csrfToken);
+
   const formData = new FormData()
   formData.append('image', imageFile)
 
   const response = await fetch(`${API_URL}/api/recipes/${recipeId}/image/`, {
     method: 'POST',
     credentials: 'include',
+    headers: {
+      'X-CSRFToken': csrfToken
+    },
     body: formData,
   })
 
