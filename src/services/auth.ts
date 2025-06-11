@@ -14,16 +14,27 @@ import { AuthResponse } from '../types/auth'
 
 // Função auxiliar para obter o token CSRF
 const getCsrfToken = (): string => {
-  if (typeof document === 'undefined') return '';
+  if (typeof document === 'undefined') {
+    console.log('getCsrfToken: document não disponível (SSR)');
+    return '';
+  }
+  
+  console.log('getCsrfToken: todos os cookies:', document.cookie);
   
   const cookie = document.cookie
     .split('; ')
     .find(row => row.startsWith('csrftoken='));
     
+  console.log('getCsrfToken: cookie CSRF encontrado:', cookie);
+    
   if (cookie) {
-    return cookie.split('=')[1];
+    const token = cookie.split('=')[1];
+    console.log('getCsrfToken: token extraído:', token);
+    console.log('getCsrfToken: comprimento do token:', token.length);
+    return token;
   }
   
+  console.log('getCsrfToken: nenhum cookie CSRF encontrado');
   return '';
 };
 
@@ -50,13 +61,15 @@ export const fetchCsrfToken = async (): Promise<string> => {
     console.log('Resposta do servidor CSRF:', data);
     
     if (data && data.csrfToken) {
-      console.log('Token CSRF obtido da resposta JSON');
+      console.log('Token CSRF obtido da resposta JSON:', data.csrfToken);
+      console.log('Comprimento do token CSRF (JSON):', data.csrfToken.length);
       return data.csrfToken;
     }
     
     // Se não encontrou no JSON, tentar obter do cookie
     const tokenFromCookie = getCsrfToken();
-    console.log('Token CSRF obtido do cookie:', tokenFromCookie ? 'Sim' : 'Não');
+    console.log('Token CSRF obtido do cookie:', tokenFromCookie);
+    console.log('Comprimento do token CSRF (cookie):', tokenFromCookie.length);
     
     return tokenFromCookie;
   } catch (err) {
