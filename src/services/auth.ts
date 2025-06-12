@@ -19,29 +19,59 @@ const getCSRFToken = (): string => {
     return '';
   }
   
+  console.log('=== EXTRAINDO TOKEN DOS COOKIES ===');
   console.log('getCSRFToken: todos os cookies:', document.cookie);
   
-  const cookie = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('CSRFToken='));
-    
+  // Verificar se há cookies
+  if (!document.cookie) {
+    console.log('getCSRFToken: ERRO - Nenhum cookie encontrado!');
+    return '';
+  }
+  
+  const cookies = document.cookie.split('; ');
+  console.log('getCSRFToken: cookies separados:', cookies);
+  
+  const cookie = cookies.find(row => row.startsWith('csrftoken='));
   console.log('getCSRFToken: cookie CSRF encontrado:', cookie);
     
   if (cookie) {
     const token = cookie.split('=')[1];
     console.log('getCSRFToken: token extraído:', token);
     console.log('getCSRFToken: comprimento do token:', token.length);
+    console.log('getCSRFToken: tipo do token:', typeof token);
+    
+    // Verificar se o token não está vazio ou undefined
+    if (!token || token === 'undefined' || token === 'null') {
+      console.error('getCSRFToken: ERRO - Token inválido:', token);
+      return '';
+    }
+    
     return token;
   }
   
   console.log('getCSRFToken: nenhum cookie CSRF encontrado');
+  console.log('getCSRFToken: procurando por variações do nome do cookie...');
+  
+  // Tentar outras variações do nome do cookie
+  const variations = ['CSRFToken=', 'csrf_token=', 'X-CSRFToken='];
+  for (const variation of variations) {
+    const altCookie = cookies.find(row => row.startsWith(variation));
+    if (altCookie) {
+      console.log(`getCSRFToken: cookie alternativo encontrado (${variation}):`, altCookie);
+      return altCookie.split('=')[1];
+    }
+  }
+  
+  console.log('=== FIM DA EXTRAÇÃO DOS COOKIES ===');
   return '';
 };
 
 // Função para obter o token CSRF do servidor de forma síncrona
 export const fetchCSRFToken = async (): Promise<string> => {
   try {
-    console.log('Obtendo token CSRF do servidor:', `${API_URL}/api/auth/csrf/`);
+    console.log('=== INICIANDO OBTENÇÃO DE TOKEN CSRF ===');
+    console.log('URL da API:', `${API_URL}/api/auth/csrf/`);
+    console.log('Cookies antes da requisição:', document.cookie);
     
     // Usar a URL completa do backend
     const response = await fetch(`${API_URL}/api/auth/csrf/`, {
@@ -52,7 +82,12 @@ export const fetchCSRFToken = async (): Promise<string> => {
       }
     });
     
+    console.log('Status da resposta:', response.status);
+    console.log('Headers da resposta:', [...response.headers.entries()]);
+    
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Erro na resposta:', errorText);
       throw new Error(`Erro ao obter token CSRF: ${response.status} ${response.statusText}`);
     }
     
@@ -63,14 +98,28 @@ export const fetchCSRFToken = async (): Promise<string> => {
     if (data && data.CSRFToken) {
       console.log('Token CSRF obtido da resposta JSON:', data.CSRFToken);
       console.log('Comprimento do token CSRF (JSON):', data.CSRFToken.length);
+      console.log('Tipo do token (JSON):', typeof data.CSRFToken);
+      
+      // Validar se o token tem o formato correto
+      if (data.CSRFToken.length < 32) {
+        console.warn('AVISO: Token CSRF muito curto!', data.CSRFToken.length);
+      }
+      
       return data.CSRFToken;
     }
+    
+    console.log('Cookies após a requisição:', document.cookie);
     
     // Se não encontrou no JSON, tentar obter do cookie
     const tokenFromCookie = getCSRFToken();
     console.log('Token CSRF obtido do cookie:', tokenFromCookie);
     console.log('Comprimento do token CSRF (cookie):', tokenFromCookie.length);
     
+    if (tokenFromCookie && tokenFromCookie.length < 32) {
+      console.warn('AVISO: Token CSRF do cookie muito curto!', tokenFromCookie.length);
+    }
+    
+    console.log('=== FIM DA OBTENÇÃO DE TOKEN CSRF ===');
     return tokenFromCookie;
   } catch (err) {
     console.error('Erro ao obter token CSRF:', err);
@@ -203,7 +252,7 @@ class AuthService {
       
       // Limpar cookies de sessão
       document.cookie = 'sessionid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
-      document.cookie = 'CSRFToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
+      document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
       
       // Limpar qualquer cache do navegador relacionado à autenticação
       if ('caches' in window) {

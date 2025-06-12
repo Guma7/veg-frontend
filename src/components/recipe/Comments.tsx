@@ -226,7 +226,7 @@ export function Comments({ recipeId }: CommentsProps) {
         
         const cookie = document.cookie
           .split('; ')
-          .find(row => row.startsWith('CSRFToken='));
+          .find(row => row.startsWith('csrftoken='));
           
         if (cookie) {
           return cookie.split('=')[1];

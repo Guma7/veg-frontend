@@ -4,6 +4,16 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  images: {
+    domains: ['veg-backend-rth1.onrender.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'veg-backend-rth1.onrender.com',
+        pathname: '/media/**',
+      },
+    ],
+  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if

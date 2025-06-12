@@ -336,7 +336,7 @@ export default function ProfilePage() {
       // Obter o token CSRF do cookie se disponível
       const CSRFToken = document.cookie
           .split('; ')
-          .find(row => row.startsWith('CSRFToken='))
+          .find(row => row.startsWith('csrftoken='))
           ?.split('=')[1];
       
       // Preparar os headers com o token CSRF

@@ -91,7 +91,7 @@ export default function EditRecipePage({ params }: PageProps) {
       const getCSRFToken = (): string => {
         const cookie = document.cookie
           .split('; ')
-          .find(row => row.startsWith('CSRFToken='))
+          .find(row => row.startsWith('csrftoken='))
           
         if (cookie) {
           return cookie.split('=')[1]

@@ -56,7 +56,7 @@ export default function ProfilePage({ params }: PageProps) {
           if (!CSRFToken) {
             CSRFToken = document.cookie
               .split('; ')
-              .find(row => row.startsWith('CSRFToken='))
+              .find(row => row.startsWith('csrftoken='))
               ?.split('=')[1] || '';
             
             if (CSRFToken) {

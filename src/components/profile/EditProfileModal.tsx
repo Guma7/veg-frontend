@@ -141,7 +141,7 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
       if (!headers['X-Csrftoken']) {
         const CSRFToken = document.cookie
           .split('; ')
-          .find(row => row.startsWith('CSRFToken='))
+          .find(row => row.startsWith('csrftoken='))
           ?.split('=')[1] || '';
         
         if (CSRFToken) {

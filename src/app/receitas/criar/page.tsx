@@ -122,10 +122,9 @@ export default function CriarReceita() {
         throw new Error('Não foi possível obter o token CSRF');
       }
       
-      // Corrigir a URL da API para apontar para o backend correto
-      const apiUrl = 'https://veg-backend-rth1.onrender.com';
+      // Usar a variável API_URL definida no topo do arquivo
       
-      const response = await fetch(`${apiUrl}/api/recipes/`, {
+      const response = await fetch(`${API_URL}/api/recipes/`, {
         method: 'POST',
         body: formDataToSend,
         credentials: 'include',
