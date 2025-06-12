@@ -40,10 +40,10 @@ export default function NewRecipePage() {
       })
       
       // Obter o token CSRF do cookie
-      const getCsrfToken = (): string => {
+      const getCSRFToken = (): string => {
         const cookie = document.cookie
           .split('; ')
-          .find(row => row.startsWith('csrftoken='))
+          .find(row => row.startsWith('CSRFToken='))
           
         if (cookie) {
           return cookie.split('=')[1]
@@ -52,7 +52,7 @@ export default function NewRecipePage() {
         return ''
       }
       
-      const csrfToken = getCsrfToken()
+      const CSRFToken = getCSRFToken()
       
       // Log do FormData para depuração
       console.log('Enviando dados para o servidor:')
@@ -64,7 +64,7 @@ export default function NewRecipePage() {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': CSRFToken
         },
         // Não definir Content-Type ao usar FormData, o navegador configurará automaticamente
         // incluindo o boundary necessário para multipart/form-data

@@ -1,14 +1,14 @@
 import { Recipe } from '../types/recipe'
-import { fetchCsrfToken } from './auth'
+import { fetchCSRFToken } from './auth'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com'
 
 export async function createRecipe(recipeData: Partial<Recipe>) {
   // Obter o token CSRF usando a função do auth.ts
-  const csrfToken = await fetchCsrfToken();
-  console.log('Token CSRF para criar receita:', csrfToken);
+  const CSRFToken = await fetchCSRFToken();
+  console.log('Token CSRF para criar receita:', CSRFToken);
   
-  if (!csrfToken) {
+  if (!CSRFToken) {
     throw new Error('Não foi possível obter o token CSRF');
   }
 
@@ -18,7 +18,7 @@ export async function createRecipe(recipeData: Partial<Recipe>) {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-CSRFToken': csrfToken
+      'X-CSRFToken': CSRFToken
     },
     body: JSON.stringify(recipeData),
   })
@@ -33,10 +33,10 @@ export async function createRecipe(recipeData: Partial<Recipe>) {
 
 export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
   // Obter o token CSRF usando a função do auth.ts
-  const csrfToken = await fetchCsrfToken();
-  console.log('Token CSRF para atualizar receita:', csrfToken);
+  const CSRFToken = await fetchCSRFToken();
+  console.log('Token CSRF para atualizar receita:', CSRFToken);
   
-  if (!csrfToken) {
+  if (!CSRFToken) {
     throw new Error('Não foi possível obter o token CSRF');
   }
 
@@ -46,7 +46,7 @@ export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-CSRFToken': csrfToken
+      'X-CSRFToken': CSRFToken
     },
     body: JSON.stringify(recipeData),
   })
@@ -61,10 +61,10 @@ export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
 
 export async function uploadRecipeImage(recipeId: string, imageFile: File) {
   // Obter o token CSRF usando a função do auth.ts
-  const csrfToken = await fetchCsrfToken();
-  console.log('Token CSRF para upload de imagem:', csrfToken);
+  const CSRFToken = await fetchCSRFToken();
+  console.log('Token CSRF para upload de imagem:', CSRFToken);
   
-  if (!csrfToken) {
+  if (!CSRFToken) {
     throw new Error('Não foi possível obter o token CSRF');
   }
 
@@ -75,7 +75,7 @@ export async function uploadRecipeImage(recipeId: string, imageFile: File) {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'X-CSRFToken': csrfToken
+      'X-CSRFToken': CSRFToken
     },
     body: formData,
   })

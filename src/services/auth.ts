@@ -13,33 +13,33 @@ interface UserData {
 import { AuthResponse } from '../types/auth'
 
 // Função auxiliar para obter o token CSRF
-const getCsrfToken = (): string => {
+const getCSRFToken = (): string => {
   if (typeof document === 'undefined') {
-    console.log('getCsrfToken: document não disponível (SSR)');
+    console.log('getCSRFToken: document não disponível (SSR)');
     return '';
   }
   
-  console.log('getCsrfToken: todos os cookies:', document.cookie);
+  console.log('getCSRFToken: todos os cookies:', document.cookie);
   
   const cookie = document.cookie
     .split('; ')
-    .find(row => row.startsWith('csrftoken='));
+    .find(row => row.startsWith('CSRFToken='));
     
-  console.log('getCsrfToken: cookie CSRF encontrado:', cookie);
+  console.log('getCSRFToken: cookie CSRF encontrado:', cookie);
     
   if (cookie) {
     const token = cookie.split('=')[1];
-    console.log('getCsrfToken: token extraído:', token);
-    console.log('getCsrfToken: comprimento do token:', token.length);
+    console.log('getCSRFToken: token extraído:', token);
+    console.log('getCSRFToken: comprimento do token:', token.length);
     return token;
   }
   
-  console.log('getCsrfToken: nenhum cookie CSRF encontrado');
+  console.log('getCSRFToken: nenhum cookie CSRF encontrado');
   return '';
 };
 
 // Função para obter o token CSRF do servidor de forma síncrona
-export const fetchCsrfToken = async (): Promise<string> => {
+export const fetchCSRFToken = async (): Promise<string> => {
   try {
     console.log('Obtendo token CSRF do servidor:', `${API_URL}/api/auth/csrf/`);
     
@@ -60,14 +60,14 @@ export const fetchCsrfToken = async (): Promise<string> => {
     const data = await response.json();
     console.log('Resposta do servidor CSRF:', data);
     
-    if (data && data.csrfToken) {
-      console.log('Token CSRF obtido da resposta JSON:', data.csrfToken);
-      console.log('Comprimento do token CSRF (JSON):', data.csrfToken.length);
-      return data.csrfToken;
+    if (data && data.CSRFToken) {
+      console.log('Token CSRF obtido da resposta JSON:', data.CSRFToken);
+      console.log('Comprimento do token CSRF (JSON):', data.CSRFToken.length);
+      return data.CSRFToken;
     }
     
     // Se não encontrou no JSON, tentar obter do cookie
-    const tokenFromCookie = getCsrfToken();
+    const tokenFromCookie = getCSRFToken();
     console.log('Token CSRF obtido do cookie:', tokenFromCookie);
     console.log('Comprimento do token CSRF (cookie):', tokenFromCookie.length);
     
@@ -81,14 +81,14 @@ export const fetchCsrfToken = async (): Promise<string> => {
 class AuthService {
   async login(identifier: string, password: string): Promise<AuthResponse> {
     try {
-      const csrfToken = await fetchCsrfToken();
+      const CSRFToken = await fetchCSRFToken();
       
       // Usar 'identifier' como parâmetro para permitir login com email ou nome de usuário
       const response = await fetch(`${API_URL}/api/auth/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
+          'X-CSRFToken': CSRFToken,
           'Accept': 'application/json'
         },
         credentials: 'include',  // Importante para manter os cookies de sessão
@@ -137,7 +137,7 @@ class AuthService {
         password 
       };
       
-      const csrfToken = await fetchCsrfToken();
+      const CSRFToken = await fetchCSRFToken();
       
       console.log('Dados sendo enviados para o servidor:', JSON.stringify(userData));
       
@@ -146,7 +146,7 @@ class AuthService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': CSRFToken
         },
         credentials: 'include',
         body: JSON.stringify(userData),
@@ -183,13 +183,13 @@ class AuthService {
 
   async logout(): Promise<void> {
     try {
-      const csrfToken = await fetchCsrfToken();
+      const CSRFToken = await fetchCSRFToken();
       
       await fetch(`${API_URL}/api/auth/logout/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': CSRFToken
         },
         credentials: 'include',
       });
@@ -203,7 +203,7 @@ class AuthService {
       
       // Limpar cookies de sessão
       document.cookie = 'sessionid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
-      document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
+      document.cookie = 'CSRFToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + window.location.hostname;
       
       // Limpar qualquer cache do navegador relacionado à autenticação
       if ('caches' in window) {
@@ -220,14 +220,14 @@ class AuthService {
 
   async getCurrentUser(): Promise<any | null> {
     try {
-      const csrfToken = await fetchCsrfToken();
+      const CSRFToken = await fetchCSRFToken();
       
       // Verificar se há token no localStorage
       const accessToken = localStorage.getItem('accessToken');
       
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
+        'X-CSRFToken': CSRFToken,
         'Accept': 'application/json'
       };
       
@@ -252,7 +252,7 @@ class AuthService {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'X-CSRFToken': csrfToken,
+                  'X-CSRFToken': CSRFToken,
                   'Accept': 'application/json'
                 },
                 credentials: 'include',
@@ -295,13 +295,13 @@ class AuthService {
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) return false;
       
-      const csrfToken = await fetchCsrfToken();
+      const CSRFToken = await fetchCSRFToken();
       
       const response = await fetch(`${API_URL}/api/auth/token/refresh/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
+          'X-CSRFToken': CSRFToken,
           'Accept': 'application/json'
         },
         credentials: 'include',
@@ -321,14 +321,14 @@ class AuthService {
   
   async profile(): Promise<any | null> {
     try {
-      const csrfToken = await fetchCsrfToken();
+      const CSRFToken = await fetchCSRFToken();
       
       // Verificar se há token no localStorage
       const accessToken = localStorage.getItem('accessToken');
       
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
+        'X-CSRFToken': CSRFToken,
         'Accept': 'application/json'
       };
       

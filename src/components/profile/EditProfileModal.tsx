@@ -113,7 +113,7 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
         // Usando a variável API_URL já definida no início do arquivo
         console.log('Obtendo token CSRF da URL:', `${API_URL}/api/auth/csrf/`);
         
-        const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
+        const CSRFResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
           method: 'GET',
           credentials: 'include',
           headers: {
@@ -121,15 +121,15 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
           }
         });
         
-        if (!csrfResponse.ok) {
-          console.error(`Erro ao obter token CSRF: ${csrfResponse.status} ${csrfResponse.statusText}`);
+        if (!CSRFResponse.ok) {
+          console.error(`Erro ao obter token CSRF: ${CSRFResponse.status} ${CSRFResponse.statusText}`);
         } else {
-          const csrfData = await csrfResponse.json();
-          console.log('Resposta do servidor CSRF:', csrfData);
+          const CSRFData = await CSRFResponse.json();
+          console.log('Resposta do servidor CSRF:', CSRFData);
           
           // Adicionar o token CSRF obtido da resposta aos headers
-          if (csrfData && csrfData.csrfToken) {
-            headers['X-CSRFToken'] = csrfData.csrfToken;
+          if (CSRFData && CSRFData.CSRFToken) {
+            headers['X-CSRFToken'] = CSRFData.CSRFToken;
             console.log('Token CSRF obtido da resposta JSON e adicionado aos headers');
           }
         }
@@ -139,14 +139,14 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
       
       // Adicionar o token CSRF do cookie se disponível e não foi obtido da resposta
       if (!headers['X-CSRFToken']) {
-        const csrfToken = document.cookie
+        const CSRFToken = document.cookie
           .split('; ')
-          .find(row => row.startsWith('csrftoken='))
+          .find(row => row.startsWith('CSRFToken='))
           ?.split('=')[1] || '';
         
-        if (csrfToken) {
-          headers['X-CSRFToken'] = csrfToken;
-          console.log('Token CSRF do cookie adicionado ao header:', csrfToken);
+        if (CSRFToken) {
+          headers['X-CSRFToken'] = CSRFToken;
+          console.log('Token CSRF do cookie adicionado ao header:', CSRFToken);
         }
       }
       

@@ -334,30 +334,30 @@ export default function ProfilePage() {
       setError(null)
       
       // Obter o token CSRF do cookie se disponível
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('csrftoken='))
-        ?.split('=')[1];
+      const CSRFToken = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('CSRFToken='))
+          ?.split('=')[1];
       
       // Preparar os headers com o token CSRF
       const headers: Record<string, string> = {};
       
-      if (csrfToken) {
-        headers['X-CSRFToken'] = csrfToken;
-        console.log('Token CSRF adicionado aos headers:', csrfToken);
+      if (CSRFToken) {
+        headers['X-CSRFToken'] = CSRFToken;
+        console.log('Token CSRF adicionado aos headers:', CSRFToken);
       } else {
         // Tentar obter o token CSRF diretamente do servidor
         try {
-          const csrfResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
+          const CSRFResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
             method: 'GET',
             credentials: 'include'
           });
           
-          if (csrfResponse.ok) {
-            const csrfData = await csrfResponse.json();
-            if (csrfData.csrfToken) {
-              headers['X-CSRFToken'] = csrfData.csrfToken;
-              console.log('Token CSRF obtido da resposta e adicionado aos headers:', csrfData.csrfToken);
+          if (CSRFResponse.ok) {
+            const CSRFData = await CSRFResponse.json();
+            if (CSRFData.CSRFToken) {
+               headers['X-CSRFToken'] = CSRFData.CSRFToken;
+               console.log('Token CSRF obtido da resposta e adicionado aos headers:', CSRFData.CSRFToken);
             }
           }
         } catch (error) {

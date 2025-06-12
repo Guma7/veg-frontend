@@ -111,14 +111,14 @@ export default function CriarReceita() {
     })
 
     try {
-      // Importar a função fetchCsrfToken do auth.ts
-      const { fetchCsrfToken } = await import('../../../services/auth');
+      // Importar a função fetchCSRFToken do auth.ts
+      const { fetchCSRFToken } = await import('../../../services/auth');
       
       // Obter o token CSRF usando a função do auth.ts
-      const csrfToken = await fetchCsrfToken();
-      console.log('Token CSRF para criar receita:', csrfToken);
+      const CSRFToken = await fetchCSRFToken();
+      console.log('Token CSRF para criar receita:', CSRFToken);
       
-      if (!csrfToken) {
+      if (!CSRFToken) {
         throw new Error('Não foi possível obter o token CSRF');
       }
       
@@ -130,7 +130,7 @@ export default function CriarReceita() {
         body: formDataToSend,
         credentials: 'include',
         headers: {
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': CSRFToken
         }
       })
 

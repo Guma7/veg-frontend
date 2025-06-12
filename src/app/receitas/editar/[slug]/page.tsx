@@ -88,10 +88,10 @@ export default function EditRecipePage({ params }: PageProps) {
       })
       
       // Obter o token CSRF do cookie
-      const getCsrfToken = (): string => {
+      const getCSRFToken = (): string => {
         const cookie = document.cookie
           .split('; ')
-          .find(row => row.startsWith('csrftoken='))
+          .find(row => row.startsWith('CSRFToken='))
           
         if (cookie) {
           return cookie.split('=')[1]
@@ -100,7 +100,7 @@ export default function EditRecipePage({ params }: PageProps) {
         return ''
       }
       
-      const csrfToken = getCsrfToken()
+      const CSRFToken = getCSRFToken()
       
       // Log do FormData para depuração
       console.log('Enviando dados para o servidor:')
@@ -112,7 +112,7 @@ export default function EditRecipePage({ params }: PageProps) {
         method: 'PUT',
         credentials: 'include',
         headers: {
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': CSRFToken
         },
         body: formData
       })

@@ -26,10 +26,10 @@ export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
   // Adicionar token CSRF para métodos que modificam dados
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method || '')) {
     // Importar e usar a função fetchCsrfToken do auth.ts
-  const { fetchCsrfToken } = await import('./auth');
-  const csrfToken = await fetchCsrfToken();
-  if (csrfToken) {
-    headers.set('X-CSRFToken', csrfToken);
+  const { fetchCSRFToken } = await import('./auth');
+  const CSRFToken = await fetchCSRFToken();
+  if (CSRFToken) {
+    headers.set('X-CSRFToken', CSRFToken);
     }
   }
   

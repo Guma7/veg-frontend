@@ -128,10 +128,10 @@ export function Comments({ recipeId }: CommentsProps) {
 
     try {
       // Importar e usar a função fetchCsrfToken do auth.ts
-      const { fetchCsrfToken } = await import('../../services/auth');
-      const csrfToken = await fetchCsrfToken();
+      const { fetchCSRFToken } = await import('../../services/auth');
+      const CSRFToken = await fetchCSRFToken();
       
-      if (!csrfToken) {
+      if (!CSRFToken) {
         throw new Error('Não foi possível obter o token CSRF');
       }
       
@@ -139,7 +139,7 @@ export function Comments({ recipeId }: CommentsProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': CSRFToken
         },
         credentials: 'include',
         body: JSON.stringify({ content: newComment.trim() })
@@ -221,12 +221,12 @@ export function Comments({ recipeId }: CommentsProps) {
 
     try {
       // Obter o token CSRF do cookie
-      const getCsrfToken = (): string => {
+      const getCSRFToken = (): string => {
         if (typeof document === 'undefined') return '';
         
         const cookie = document.cookie
           .split('; ')
-          .find(row => row.startsWith('csrftoken='));
+          .find(row => row.startsWith('CSRFToken='));
           
         if (cookie) {
           return cookie.split('=')[1];
@@ -248,13 +248,13 @@ export function Comments({ recipeId }: CommentsProps) {
         console.error('Erro ao obter token CSRF:', error);
       }
 
-      const csrfToken = getCsrfToken();
+      const CSRFToken = getCSRFToken();
 
       const response = await fetch(`${API_URL}/api/recipes/${recipeId}/comments/${commentId}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': CSRFToken
         },
         credentials: 'include',
         body: JSON.stringify({ content: editContent.trim() })
@@ -302,10 +302,10 @@ export function Comments({ recipeId }: CommentsProps) {
 
     try {
       // Importar e usar a função fetchCsrfToken do auth.ts
-      const { fetchCsrfToken } = await import('../../services/auth');
-      const csrfToken = await fetchCsrfToken();
+      const { fetchCSRFToken } = await import('../../services/auth');
+      const CSRFToken = await fetchCSRFToken();
       
-      if (!csrfToken) {
+      if (!CSRFToken) {
         throw new Error('Não foi possível obter o token CSRF');
       }
 
@@ -313,7 +313,7 @@ export function Comments({ recipeId }: CommentsProps) {
         method: 'DELETE',
         credentials: 'include',
         headers: {
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': CSRFToken
         }
       })
 
