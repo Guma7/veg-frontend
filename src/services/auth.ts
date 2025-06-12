@@ -48,8 +48,7 @@ export const fetchCSRFToken = async (): Promise<string> => {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Accept': 'application/json'
       }
     });
     
@@ -72,13 +71,7 @@ export const fetchCSRFToken = async (): Promise<string> => {
     console.log('Token CSRF obtido do cookie:', tokenFromCookie);
     console.log('Comprimento do token CSRF (cookie):', tokenFromCookie.length);
     
-    // Verificar se o token tem o comprimento correto (64 caracteres para Django)
-    if (tokenFromCookie && (tokenFromCookie.length === 64 || tokenFromCookie.length === 32)) {
-      return tokenFromCookie;
-    } else {
-      console.warn('Token CSRF com comprimento incorreto:', tokenFromCookie.length);
-      return tokenFromCookie; // Retornar o token mesmo com comprimento incorreto para tentar a requisição
-    }
+    return tokenFromCookie;
   } catch (err) {
     console.error('Erro ao obter token CSRF:', err);
     return '';
