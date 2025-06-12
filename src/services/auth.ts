@@ -13,29 +13,35 @@ interface UserData {
 import { AuthResponse } from '../types/auth'
 
 // Função auxiliar para obter o token CSRF
-const getCSRFToken = (): string => {
-  if (typeof document === 'undefined') {
-    console.log('getCSRFToken: document não disponível (SSR)');
+export const getCSRFToken = (): string => {
+  try {
+    if (typeof document === 'undefined') {
+      console.log('getCSRFToken: document não disponível (SSR)');
+      return '';
+    }
+    
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith('csrftoken=')) {
+        const token = cookie.substring('csrftoken='.length, cookie.length);
+        console.log('Token CSRF encontrado no cookie:', token);
+        console.log('Comprimento do token CSRF:', token.length);
+        
+        // Verificar se o token tem o comprimento esperado (64 caracteres)
+        if (token.length !== 64) {
+          console.warn('Token CSRF do cookie com comprimento incorreto:', token.length, 'esperado: 64');
+        }
+        
+        return token;
+      }
+    }
+    console.warn('Token CSRF não encontrado nos cookies');
+    return '';
+  } catch (err) {
+    console.error('Erro ao obter token CSRF dos cookies:', err);
     return '';
   }
-  
-  console.log('getCSRFToken: todos os cookies:', document.cookie);
-  
-  const cookie = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('csrftoken='));
-    
-  console.log('getCSRFToken: cookie CSRF encontrado:', cookie);
-    
-  if (cookie) {
-    const token = cookie.split('=')[1];
-    console.log('getCSRFToken: token extraído:', token);
-    console.log('getCSRFToken: comprimento do token:', token.length);
-    return token;
-  }
-  
-  console.log('getCSRFToken: nenhum cookie CSRF encontrado');
-  return '';
 };
 
 // Função para obter o token CSRF do servidor de forma síncrona
@@ -63,6 +69,12 @@ export const fetchCSRFToken = async (): Promise<string> => {
     if (data && data.CSRFToken) {
       console.log('Token CSRF obtido da resposta JSON:', data.CSRFToken);
       console.log('Comprimento do token CSRF (JSON):', data.CSRFToken.length);
+      
+      // Verificar se o token tem o comprimento esperado (64 caracteres)
+      if (data.CSRFToken.length !== 64) {
+        console.warn('Token CSRF com comprimento incorreto:', data.CSRFToken.length, 'esperado: 64');
+      }
+      
       return data.CSRFToken;
     }
     
@@ -70,6 +82,11 @@ export const fetchCSRFToken = async (): Promise<string> => {
     const tokenFromCookie = getCSRFToken();
     console.log('Token CSRF obtido do cookie:', tokenFromCookie);
     console.log('Comprimento do token CSRF (cookie):', tokenFromCookie.length);
+    
+    // Verificar se o token do cookie tem o comprimento esperado (64 caracteres)
+    if (tokenFromCookie && tokenFromCookie.length !== 64) {
+      console.warn('Token CSRF do cookie com comprimento incorreto:', tokenFromCookie.length, 'esperado: 64');
+    }
     
     return tokenFromCookie;
   } catch (err) {

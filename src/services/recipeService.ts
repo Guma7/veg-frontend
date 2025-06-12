@@ -11,6 +11,11 @@ export async function createRecipe(recipeData: Partial<Recipe>) {
   if (!CSRFToken) {
     throw new Error('Não foi possível obter o token CSRF');
   }
+  
+  // Verificar se o token tem o comprimento esperado (64 caracteres)
+  if (CSRFToken.length !== 64) {
+    console.warn('Token CSRF com comprimento incorreto em createRecipe:', CSRFToken.length, 'esperado: 64');
+  }
 
   const response = await fetch(`${API_URL}/api/recipes/`, {
     method: 'POST',
@@ -38,6 +43,11 @@ export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
   
   if (!CSRFToken) {
     throw new Error('Não foi possível obter o token CSRF');
+  }
+  
+  // Verificar se o token tem o comprimento esperado (64 caracteres)
+  if (CSRFToken.length !== 64) {
+    console.warn('Token CSRF com comprimento incorreto em updateRecipe:', CSRFToken.length, 'esperado: 64');
   }
 
   const response = await fetch(`${API_URL}/api/recipes/${slug}/`, {

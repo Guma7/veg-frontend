@@ -26,10 +26,18 @@ export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
   // Adicionar token CSRF para métodos que modificam dados
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method || '')) {
     // Importar e usar a função fetchCsrfToken do auth.ts
-  const { fetchCSRFToken } = await import('./auth');
-  const CSRFToken = await fetchCSRFToken();
-  if (CSRFToken) {
-    headers.set('X-Csrftoken', CSRFToken);
+    const { fetchCSRFToken } = await import('./auth');
+    const CSRFToken = await fetchCSRFToken();
+    
+    if (CSRFToken) {
+      // Verificar se o token tem o comprimento esperado (64 caracteres)
+      if (CSRFToken.length !== 64) {
+        console.warn('Token CSRF com comprimento incorreto em fetchApi:', CSRFToken.length, 'esperado: 64');
+      }
+      
+      headers.set('X-Csrftoken', CSRFToken);
+    } else {
+      console.error('Token CSRF não disponível para requisição:', options.method, url);
     }
   }
   
