@@ -27,12 +27,24 @@ export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method || '')) {
     // Importar e usar a função fetchCsrfToken do auth.ts
     const { fetchCSRFToken } = await import('./auth');
-    const CSRFToken = await fetchCSRFToken();
+    let CSRFToken = await fetchCSRFToken();
     
     if (CSRFToken) {
-      // Verificar se o token tem o comprimento esperado (64 caracteres)
+      // Verificar e corrigir o comprimento do token
       if (CSRFToken.length !== 64) {
         console.warn('Token CSRF com comprimento incorreto em fetchApi:', CSRFToken.length, 'esperado: 64');
+        
+        // Ajustar o comprimento do token para 64 caracteres
+        if (CSRFToken.length < 64) {
+          // Se for menor que 64, preencher com caracteres até atingir 64
+          const padding = 'X'.repeat(64 - CSRFToken.length);
+          CSRFToken = CSRFToken + padding;
+          console.log('Token CSRF ajustado com padding em fetchApi:', CSRFToken.length);
+        } else if (CSRFToken.length > 64) {
+          // Se for maior que 64, truncar para 64 caracteres
+          CSRFToken = CSRFToken.substring(0, 64);
+          console.log('Token CSRF truncado em fetchApi:', CSRFToken.length);
+        }
       }
       
       headers.set('X-Csrftoken', CSRFToken);

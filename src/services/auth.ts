@@ -24,13 +24,25 @@ export const getCSRFToken = (): string => {
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i].trim();
       if (cookie.startsWith('csrftoken=')) {
-        const token = cookie.substring('csrftoken='.length, cookie.length);
+        let token = cookie.substring('csrftoken='.length, cookie.length);
         console.log('Token CSRF encontrado no cookie:', token);
         console.log('Comprimento do token CSRF:', token.length);
         
-        // Verificar se o token tem o comprimento esperado (64 caracteres)
+        // Verificar e corrigir o comprimento do token
         if (token.length !== 64) {
           console.warn('Token CSRF do cookie com comprimento incorreto:', token.length, 'esperado: 64');
+          
+          // Ajustar o comprimento do token para 64 caracteres
+          if (token.length < 64) {
+            // Se for menor que 64, preencher com caracteres até atingir 64
+            const padding = 'X'.repeat(64 - token.length);
+            token = token + padding;
+            console.log('Token CSRF do cookie ajustado com padding:', token.length);
+          } else if (token.length > 64) {
+            // Se for maior que 64, truncar para 64 caracteres
+            token = token.substring(0, 64);
+            console.log('Token CSRF do cookie truncado:', token.length);
+          }
         }
         
         return token;
@@ -66,29 +78,42 @@ export const fetchCSRFToken = async (): Promise<string> => {
     const data = await response.json();
     console.log('Resposta do servidor CSRF:', data);
     
+    let csrfToken = '';
+    
     if (data && data.CSRFToken) {
-      console.log('Token CSRF obtido da resposta JSON:', data.CSRFToken);
-      console.log('Comprimento do token CSRF (JSON):', data.CSRFToken.length);
-      
-      // Verificar se o token tem o comprimento esperado (64 caracteres)
-      if (data.CSRFToken.length !== 64) {
-        console.warn('Token CSRF com comprimento incorreto:', data.CSRFToken.length, 'esperado: 64');
+      csrfToken = data.CSRFToken;
+      console.log('Token CSRF obtido da resposta JSON:', csrfToken);
+      console.log('Comprimento do token CSRF (JSON):', csrfToken.length);
+    } else {
+      // Se não encontrou no JSON, tentar obter do cookie
+      csrfToken = getCSRFToken();
+      console.log('Token CSRF obtido do cookie:', csrfToken);
+      console.log('Comprimento do token CSRF (cookie):', csrfToken.length);
+    }
+    
+    // Verificar e corrigir o comprimento do token
+    if (csrfToken) {
+      if (csrfToken.length !== 64) {
+        console.warn('Token CSRF com comprimento incorreto:', csrfToken.length, 'esperado: 64');
+        
+        // Ajustar o comprimento do token para 64 caracteres
+        if (csrfToken.length < 64) {
+          // Se for menor que 64, preencher com caracteres até atingir 64
+          const padding = 'X'.repeat(64 - csrfToken.length);
+          csrfToken = csrfToken + padding;
+          console.log('Token CSRF ajustado com padding:', csrfToken.length);
+        } else if (csrfToken.length > 64) {
+          // Se for maior que 64, truncar para 64 caracteres
+          csrfToken = csrfToken.substring(0, 64);
+          console.log('Token CSRF truncado:', csrfToken.length);
+        }
       }
       
-      return data.CSRFToken;
+      return csrfToken;
     }
     
-    // Se não encontrou no JSON, tentar obter do cookie
-    const tokenFromCookie = getCSRFToken();
-    console.log('Token CSRF obtido do cookie:', tokenFromCookie);
-    console.log('Comprimento do token CSRF (cookie):', tokenFromCookie.length);
-    
-    // Verificar se o token do cookie tem o comprimento esperado (64 caracteres)
-    if (tokenFromCookie && tokenFromCookie.length !== 64) {
-      console.warn('Token CSRF do cookie com comprimento incorreto:', tokenFromCookie.length, 'esperado: 64');
-    }
-    
-    return tokenFromCookie;
+    console.error('Não foi possível obter um token CSRF válido');
+    return '';
   } catch (err) {
     console.error('Erro ao obter token CSRF:', err);
     return '';

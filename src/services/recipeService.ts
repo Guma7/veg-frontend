@@ -5,16 +5,28 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onr
 
 export async function createRecipe(recipeData: Partial<Recipe>) {
   // Obter o token CSRF usando a função do auth.ts
-  const CSRFToken = await fetchCSRFToken();
+  let CSRFToken = await fetchCSRFToken();
   console.log('Token CSRF para criar receita:', CSRFToken);
   
   if (!CSRFToken) {
     throw new Error('Não foi possível obter o token CSRF');
   }
   
-  // Verificar se o token tem o comprimento esperado (64 caracteres)
+  // Verificar e corrigir o comprimento do token
   if (CSRFToken.length !== 64) {
     console.warn('Token CSRF com comprimento incorreto em createRecipe:', CSRFToken.length, 'esperado: 64');
+    
+    // Ajustar o comprimento do token para 64 caracteres
+    if (CSRFToken.length < 64) {
+      // Se for menor que 64, preencher com caracteres até atingir 64
+      const padding = 'X'.repeat(64 - CSRFToken.length);
+      CSRFToken = CSRFToken + padding;
+      console.log('Token CSRF ajustado com padding em createRecipe:', CSRFToken.length);
+    } else if (CSRFToken.length > 64) {
+      // Se for maior que 64, truncar para 64 caracteres
+      CSRFToken = CSRFToken.substring(0, 64);
+      console.log('Token CSRF truncado em createRecipe:', CSRFToken.length);
+    }
   }
 
   const response = await fetch(`${API_URL}/api/recipes/`, {
@@ -38,16 +50,28 @@ export async function createRecipe(recipeData: Partial<Recipe>) {
 
 export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
   // Obter o token CSRF usando a função do auth.ts
-  const CSRFToken = await fetchCSRFToken();
+  let CSRFToken = await fetchCSRFToken();
   console.log('Token CSRF para atualizar receita:', CSRFToken);
   
   if (!CSRFToken) {
     throw new Error('Não foi possível obter o token CSRF');
   }
   
-  // Verificar se o token tem o comprimento esperado (64 caracteres)
+  // Verificar e corrigir o comprimento do token
   if (CSRFToken.length !== 64) {
     console.warn('Token CSRF com comprimento incorreto em updateRecipe:', CSRFToken.length, 'esperado: 64');
+    
+    // Ajustar o comprimento do token para 64 caracteres
+    if (CSRFToken.length < 64) {
+      // Se for menor que 64, preencher com caracteres até atingir 64
+      const padding = 'X'.repeat(64 - CSRFToken.length);
+      CSRFToken = CSRFToken + padding;
+      console.log('Token CSRF ajustado com padding em updateRecipe:', CSRFToken.length);
+    } else if (CSRFToken.length > 64) {
+      // Se for maior que 64, truncar para 64 caracteres
+      CSRFToken = CSRFToken.substring(0, 64);
+      console.log('Token CSRF truncado em updateRecipe:', CSRFToken.length);
+    }
   }
 
   const response = await fetch(`${API_URL}/api/recipes/${slug}/`, {

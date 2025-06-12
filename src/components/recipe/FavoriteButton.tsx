@@ -4,6 +4,9 @@ import styled from 'styled-components'
 import { useState } from 'react'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 
+// Definir a variável API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://veg-backend-rth1.onrender.com';
+
 const Button = styled.button<{ $isFavorite: boolean }>`
   background: none;
   border: none;
@@ -29,9 +32,22 @@ export function FavoriteButton({ recipeId, initialFavorite = false, onToggle }: 
 
   const handleToggle = async () => {
     try {
-      const response = await fetch(`/api/recipes/${recipeId}/favorite`, {
+      // Obter o token CSRF usando a função do auth.ts
+      const { fetchCSRFToken } = await import('../../services/auth');
+      const CSRFToken = await fetchCSRFToken();
+      
+      if (!CSRFToken) {
+        console.error('Não foi possível obter o token CSRF');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/api/recipes/${recipeId}/favorite/`, {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Csrftoken': CSRFToken
+        }
       })
 
       if (response.ok) {

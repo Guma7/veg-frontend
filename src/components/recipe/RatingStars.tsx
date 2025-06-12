@@ -74,10 +74,20 @@ export function RatingStars({ recipeId, initialRating = 0, onRatingSubmit, reado
 
     try {
       setIsSubmitting(true)
+      
+      // Obter o token CSRF usando a função do auth.ts
+      const { fetchCSRFToken } = await import('../../services/auth');
+      const CSRFToken = await fetchCSRFToken();
+      
+      if (!CSRFToken) {
+        throw new Error('Não foi possível obter o token CSRF');
+      }
+      
       const response = await fetch(`${API_URL}/api/recipes/${recipeId}/rate/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Csrftoken': CSRFToken
         },
         credentials: 'include',
         body: JSON.stringify({ rating: value })

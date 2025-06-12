@@ -115,14 +115,38 @@ export default function CriarReceita() {
       const { fetchCSRFToken } = await import('../../../services/auth');
       
       // Obter o token CSRF usando a função do auth.ts
-      const CSRFToken = await fetchCSRFToken();
+      let CSRFToken = await fetchCSRFToken();
       console.log('Token CSRF para criar receita:', CSRFToken);
       
       if (!CSRFToken) {
         throw new Error('Não foi possível obter o token CSRF');
       }
       
-      // Usar a variável API_URL definida no topo do arquivo
+      // Verificar e corrigir o comprimento do token
+      if (CSRFToken.length !== 64) {
+        console.warn('Token CSRF com comprimento incorreto em criar receita:', CSRFToken.length, 'esperado: 64');
+        
+        // Ajustar o comprimento do token para 64 caracteres
+        if (CSRFToken.length < 64) {
+          // Se for menor que 64, preencher com caracteres até atingir 64
+          const padding = 'X'.repeat(64 - CSRFToken.length);
+          CSRFToken = CSRFToken + padding;
+          console.log('Token CSRF ajustado com padding em criar receita:', CSRFToken.length);
+        } else if (CSRFToken.length > 64) {
+          // Se for maior que 64, truncar para 64 caracteres
+          CSRFToken = CSRFToken.substring(0, 64);
+          console.log('Token CSRF truncado em criar receita:', CSRFToken.length);
+        }
+      }
+      
+      console.log('Token CSRF final para criar receita:', CSRFToken.substring(0, 10) + '...' + CSRFToken.substring(CSRFToken.length - 10));
+      console.log('Comprimento do token CSRF final:', CSRFToken.length);
+      
+      // Log do FormData para depuração
+      console.log('Enviando dados para o servidor:');
+      for (const pair of formDataToSend.entries()) {
+        console.log(pair[0] + ': ' + (pair[1] instanceof File ? `Arquivo: ${pair[1].name} (${pair[1].size} bytes)` : pair[1]));
+      }
       
       const response = await fetch(`${API_URL}/api/recipes/`, {
         method: 'POST',

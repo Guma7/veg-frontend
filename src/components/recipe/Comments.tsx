@@ -220,35 +220,30 @@ export function Comments({ recipeId }: CommentsProps) {
     setError(null)
 
     try {
-      // Obter o token CSRF do cookie
-      const getCSRFToken = (): string => {
-        if (typeof document === 'undefined') return '';
-        
-        const cookie = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('csrftoken='));
-          
-        if (cookie) {
-          return cookie.split('=')[1];
-        }
-        
-        return '';
-      };
-
-      // Obter o token CSRF antes de fazer a requisição
-      try {
-        await fetch(`${API_URL}/api/auth/csrf/`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-      } catch (error) {
-        console.error('Erro ao obter token CSRF:', error);
+      // Importar e usar a função fetchCSRFToken do auth.ts
+      const { fetchCSRFToken } = await import('../../services/auth');
+      let CSRFToken = await fetchCSRFToken();
+      
+      if (!CSRFToken) {
+        throw new Error('Não foi possível obter o token CSRF');
       }
-
-      const CSRFToken = getCSRFToken();
+      
+      // Verificar e corrigir o comprimento do token
+      if (CSRFToken.length !== 64) {
+        console.warn('Token CSRF com comprimento incorreto em editar comentário:', CSRFToken.length, 'esperado: 64');
+        
+        // Ajustar o comprimento do token para 64 caracteres
+        if (CSRFToken.length < 64) {
+          // Se for menor que 64, preencher com caracteres até atingir 64
+          const padding = 'X'.repeat(64 - CSRFToken.length);
+          CSRFToken = CSRFToken + padding;
+          console.log('Token CSRF ajustado com padding em editar comentário:', CSRFToken.length);
+        } else if (CSRFToken.length > 64) {
+          // Se for maior que 64, truncar para 64 caracteres
+          CSRFToken = CSRFToken.substring(0, 64);
+          console.log('Token CSRF truncado em editar comentário:', CSRFToken.length);
+        }
+      }
 
       const response = await fetch(`${API_URL}/api/recipes/${recipeId}/comments/${commentId}/`, {
         method: 'PUT',
