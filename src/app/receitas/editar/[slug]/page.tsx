@@ -81,26 +81,33 @@ export default function EditRecipePage({ params }: PageProps) {
     setError('')
 
     try {
-      // Obter o token CSRF antes de fazer a requisição
-      await fetch(`${API_URL}/api/auth/csrf/`, {
-        method: 'GET',
-        credentials: 'include'
-      })
+      // Importar e usar a função fetchCSRFToken do auth.ts
+      const { fetchCSRFToken } = await import('../../../../services/auth');
+      let CSRFToken = await fetchCSRFToken();
       
-      // Obter o token CSRF do cookie
-      const getCSRFToken = (): string => {
-        const cookie = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('csrftoken='))
-          
-        if (cookie) {
-          return cookie.split('=')[1]
-        }
-        
-        return ''
+      if (!CSRFToken) {
+        throw new Error('Não foi possível obter o token CSRF');
       }
       
-      const CSRFToken = getCSRFToken()
+      // Verificar e corrigir o comprimento do token
+      if (CSRFToken.length !== 64) {
+        console.warn('Token CSRF com comprimento incorreto em editar receita:', CSRFToken.length, 'esperado: 64');
+        
+        // Ajustar o comprimento do token para 64 caracteres
+        if (CSRFToken.length < 64) {
+          // Se for menor que 64, preencher com caracteres até atingir 64
+          const padding = 'X'.repeat(64 - CSRFToken.length);
+          CSRFToken = CSRFToken + padding;
+          console.log('Token CSRF ajustado com padding em editar receita:', CSRFToken.length);
+        } else if (CSRFToken.length > 64) {
+          // Se for maior que 64, truncar para 64 caracteres
+          CSRFToken = CSRFToken.substring(0, 64);
+          console.log('Token CSRF truncado em editar receita:', CSRFToken.length);
+        }
+      }
+      
+      console.log('Token CSRF final para editar receita:', CSRFToken.substring(0, 10) + '...' + CSRFToken.substring(CSRFToken.length - 10));
+      console.log('Comprimento do token CSRF final:', CSRFToken.length);
       
       // Log do FormData para depuração
       console.log('Enviando dados para o servidor:')

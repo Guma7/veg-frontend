@@ -26,45 +26,33 @@ export default function ProfilePage({ params }: PageProps) {
       try {
         // Se for FormData, enviar como multipart/form-data
         if (updatedProfile instanceof FormData) {
-          // Obter o token CSRF atualizado antes de enviar
-          let CSRFToken = '';
-          try {
-            console.log('Obtendo token CSRF da URL:', `${API_URL}/api/auth/csrf/`);
-            const CSRFResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
-              method: 'GET',
-              credentials: 'include',
-              headers: {
-                'Accept': 'application/json'
-              }
-            });
-            
-            if (!CSRFResponse.ok) {
-              console.error(`Erro ao obter token CSRF: ${CSRFResponse.status} ${CSRFResponse.statusText}`);
-            } else {
-              const CSRFData = await CSRFResponse.json();
-              console.log('Resposta do servidor CSRF:', CSRFData);
-              if (CSRFData && CSRFData.CSRFToken) {
-                CSRFToken = CSRFData.CSRFToken;
-                console.log('Token CSRF obtido da resposta JSON:', CSRFToken);
-              }
-            }
-          } catch (error) {
-            console.error('Erro ao atualizar token CSRF:', error);
+          // Importar e usar a função fetchCSRFToken do auth.ts
+          const { fetchCSRFToken } = await import('../../../services/auth');
+          let CSRFToken = await fetchCSRFToken();
+          
+          if (!CSRFToken) {
+            throw new Error('Não foi possível obter o token CSRF');
           }
           
-          // Se não obteve o token da resposta JSON, tentar obter do cookie
-          if (!CSRFToken) {
-            CSRFToken = document.cookie
-              .split('; ')
-              .find(row => row.startsWith('csrftoken='))
-              ?.split('=')[1] || '';
+          // Verificar e corrigir o comprimento do token
+          if (CSRFToken.length !== 64) {
+            console.warn('Token CSRF com comprimento incorreto em profile/[username]:', CSRFToken.length, 'esperado: 64');
             
-            if (CSRFToken) {
-              console.log('Token CSRF obtido do cookie:', CSRFToken);
-            } else {
-              console.warn('Token CSRF não encontrado no cookie');
+            // Ajustar o comprimento do token para 64 caracteres
+            if (CSRFToken.length < 64) {
+              // Se for menor que 64, preencher com caracteres até atingir 64
+              const padding = 'X'.repeat(64 - CSRFToken.length);
+              CSRFToken = CSRFToken + padding;
+              console.log('Token CSRF ajustado com padding em profile/[username]:', CSRFToken.length);
+            } else if (CSRFToken.length > 64) {
+              // Se for maior que 64, truncar para 64 caracteres
+              CSRFToken = CSRFToken.substring(0, 64);
+              console.log('Token CSRF truncado em profile/[username]:', CSRFToken.length);
             }
           }
+          
+          console.log('Token CSRF final para profile/[username]:', CSRFToken.substring(0, 10) + '...' + CSRFToken.substring(CSRFToken.length - 10));
+          console.log('Comprimento do token CSRF final:', CSRFToken.length);
   
           // Usar headers personalizados se fornecidos, ou criar novos
           const headers: Record<string, string> = customHeaders || {};

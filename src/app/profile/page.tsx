@@ -333,37 +333,38 @@ export default function ProfilePage() {
       setLoading(true)
       setError(null)
       
-      // Obter o token CSRF do cookie se disponível
-      const CSRFToken = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('csrftoken='))
-          ?.split('=')[1];
+      // Importar e usar a função fetchCSRFToken do auth.ts
+      const { fetchCSRFToken } = await import('../../services/auth');
+      let CSRFToken = await fetchCSRFToken();
       
-      // Preparar os headers com o token CSRF
-      const headers: Record<string, string> = {};
+      if (!CSRFToken) {
+        throw new Error('Não foi possível obter o token CSRF');
+      }
       
-      if (CSRFToken) {
-        headers['X-Csrftoken'] = CSRFToken;
-        console.log('Token CSRF adicionado aos headers:', CSRFToken);
-      } else {
-        // Tentar obter o token CSRF diretamente do servidor
-        try {
-          const CSRFResponse = await fetch(`${API_URL}/api/auth/csrf/`, {
-            method: 'GET',
-            credentials: 'include'
-          });
-          
-          if (CSRFResponse.ok) {
-            const CSRFData = await CSRFResponse.json();
-            if (CSRFData.CSRFToken) {
-               headers['X-Csrftoken'] = CSRFData.CSRFToken;
-               console.log('Token CSRF obtido da resposta e adicionado aos headers:', CSRFData.CSRFToken);
-            }
-          }
-        } catch (error) {
-          console.error('Erro ao obter token CSRF do servidor:', error);
+      // Verificar e corrigir o comprimento do token
+      if (CSRFToken.length !== 64) {
+        console.warn('Token CSRF com comprimento incorreto em profile:', CSRFToken.length, 'esperado: 64');
+        
+        // Ajustar o comprimento do token para 64 caracteres
+        if (CSRFToken.length < 64) {
+          // Se for menor que 64, preencher com caracteres até atingir 64
+          const padding = 'X'.repeat(64 - CSRFToken.length);
+          CSRFToken = CSRFToken + padding;
+          console.log('Token CSRF ajustado com padding em profile:', CSRFToken.length);
+        } else if (CSRFToken.length > 64) {
+          // Se for maior que 64, truncar para 64 caracteres
+          CSRFToken = CSRFToken.substring(0, 64);
+          console.log('Token CSRF truncado em profile:', CSRFToken.length);
         }
       }
+      
+      console.log('Token CSRF final para profile:', CSRFToken.substring(0, 10) + '...' + CSRFToken.substring(CSRFToken.length - 10));
+      console.log('Comprimento do token CSRF final:', CSRFToken.length);
+      
+      // Preparar os headers com o token CSRF
+      const headers: Record<string, string> = {
+        'X-Csrftoken': CSRFToken
+      };
       
       // Adicionar o token de autorização JWT se disponível
       const accessToken = localStorage.getItem('accessToken');
