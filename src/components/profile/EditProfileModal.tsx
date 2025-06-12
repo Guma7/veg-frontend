@@ -129,7 +129,7 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
           
           // Adicionar o token CSRF obtido da resposta aos headers
           if (CSRFData && CSRFData.CSRFToken) {
-            headers['X-CSRFToken'] = CSRFData.CSRFToken;
+            headers['X-Csrftoken'] = CSRFData.CSRFToken;
             console.log('Token CSRF obtido da resposta JSON e adicionado aos headers');
           }
         }
@@ -138,14 +138,14 @@ export default function EditProfileModal({ profile, onSave, onClose }: Props) {
       }
       
       // Adicionar o token CSRF do cookie se disponível e não foi obtido da resposta
-      if (!headers['X-CSRFToken']) {
+      if (!headers['X-Csrftoken']) {
         const CSRFToken = document.cookie
           .split('; ')
           .find(row => row.startsWith('CSRFToken='))
           ?.split('=')[1] || '';
         
         if (CSRFToken) {
-          headers['X-CSRFToken'] = CSRFToken;
+          headers['X-Csrftoken'] = CSRFToken;
           console.log('Token CSRF do cookie adicionado ao header:', CSRFToken);
         }
       }

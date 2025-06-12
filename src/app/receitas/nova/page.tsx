@@ -64,7 +64,7 @@ export default function NewRecipePage() {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'X-CSRFToken': CSRFToken
+          'X-Csrftoken': CSRFToken
         },
         // Não definir Content-Type ao usar FormData, o navegador configurará automaticamente
         // incluindo o boundary necessário para multipart/form-data

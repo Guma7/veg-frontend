@@ -88,7 +88,7 @@ class AuthService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': CSRFToken,
+          'X-Csrftoken': CSRFToken,
           'Accept': 'application/json'
         },
         credentials: 'include',  // Importante para manter os cookies de sessão
@@ -146,7 +146,7 @@ class AuthService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-CSRFToken': CSRFToken
+          'X-Csrftoken': CSRFToken
         },
         credentials: 'include',
         body: JSON.stringify(userData),
@@ -189,7 +189,7 @@ class AuthService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': CSRFToken
+          'X-Csrftoken': CSRFToken
         },
         credentials: 'include',
       });
@@ -227,7 +227,7 @@ class AuthService {
       
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-CSRFToken': CSRFToken,
+        'X-Csrftoken': CSRFToken,
         'Accept': 'application/json'
       };
       
@@ -252,7 +252,7 @@ class AuthService {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'X-CSRFToken': CSRFToken,
+                  'X-Csrftoken': CSRFToken,
                   'Accept': 'application/json'
                 },
                 credentials: 'include',
@@ -301,7 +301,7 @@ class AuthService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': CSRFToken,
+          'X-Csrftoken': CSRFToken,
           'Accept': 'application/json'
         },
         credentials: 'include',
@@ -328,7 +328,7 @@ class AuthService {
       
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-CSRFToken': CSRFToken,
+        'X-Csrftoken': CSRFToken,
         'Accept': 'application/json'
       };
       

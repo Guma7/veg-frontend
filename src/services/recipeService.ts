@@ -18,7 +18,7 @@ export async function createRecipe(recipeData: Partial<Recipe>) {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-CSRFToken': CSRFToken
+      'X-Csrftoken': CSRFToken
     },
     body: JSON.stringify(recipeData),
   })
@@ -46,7 +46,7 @@ export async function updateRecipe(slug: string, recipeData: Partial<Recipe>) {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-CSRFToken': CSRFToken
+      'X-Csrftoken': CSRFToken
     },
     body: JSON.stringify(recipeData),
   })
@@ -75,7 +75,7 @@ export async function uploadRecipeImage(recipeId: string, imageFile: File) {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'X-CSRFToken': CSRFToken
+      'X-Csrftoken': CSRFToken
     },
     body: formData,
   })

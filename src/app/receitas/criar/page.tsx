@@ -130,7 +130,7 @@ export default function CriarReceita() {
         body: formDataToSend,
         credentials: 'include',
         headers: {
-          'X-CSRFToken': CSRFToken
+          'X-Csrftoken': CSRFToken
         }
       })
 

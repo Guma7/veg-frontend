@@ -70,10 +70,10 @@ export default function ProfilePage({ params }: PageProps) {
           const headers: Record<string, string> = customHeaders || {};
           
           // Adicionar o token CSRF ao header se não estiver presente nos headers personalizados
-          if (CSRFToken && !headers['X-CSRFToken']) {
-            headers['X-CSRFToken'] = CSRFToken;
-            console.log('Token CSRF adicionado ao header:', CSRFToken);
-          } else if (!headers['X-CSRFToken']) {
+          if (CSRFToken && !headers['X-Csrftoken']) {
+        headers['X-Csrftoken'] = CSRFToken;
+        console.log('Token CSRF adicionado ao header:', CSRFToken);
+      } else if (!headers['X-Csrftoken']) {
             console.warn('Nenhum token CSRF disponível para adicionar ao header');
           }
   

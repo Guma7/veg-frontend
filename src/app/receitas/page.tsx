@@ -104,7 +104,7 @@ export default function RecipesPage() {
       })
 
       // Adicionar um timestamp para evitar cache do navegador
-      const requestUrl = `http://127.0.0.1:8000/api/recipes/search/?${params}`
+      const requestUrl = `https://veg-backend-rth1.onrender.com/api/recipes/search/?${params}`
       
       const response = await fetch(requestUrl, {
         method: 'GET',

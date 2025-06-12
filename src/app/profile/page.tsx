@@ -343,7 +343,7 @@ export default function ProfilePage() {
       const headers: Record<string, string> = {};
       
       if (CSRFToken) {
-        headers['X-CSRFToken'] = CSRFToken;
+        headers['X-Csrftoken'] = CSRFToken;
         console.log('Token CSRF adicionado aos headers:', CSRFToken);
       } else {
         // Tentar obter o token CSRF diretamente do servidor
@@ -356,7 +356,7 @@ export default function ProfilePage() {
           if (CSRFResponse.ok) {
             const CSRFData = await CSRFResponse.json();
             if (CSRFData.CSRFToken) {
-               headers['X-CSRFToken'] = CSRFData.CSRFToken;
+               headers['X-Csrftoken'] = CSRFData.CSRFToken;
                console.log('Token CSRF obtido da resposta e adicionado aos headers:', CSRFData.CSRFToken);
             }
           }

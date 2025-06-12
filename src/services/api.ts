@@ -29,7 +29,7 @@ export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
   const { fetchCSRFToken } = await import('./auth');
   const CSRFToken = await fetchCSRFToken();
   if (CSRFToken) {
-    headers.set('X-CSRFToken', CSRFToken);
+    headers.set('X-Csrftoken', CSRFToken);
     }
   }
   

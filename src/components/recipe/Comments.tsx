@@ -139,7 +139,7 @@ export function Comments({ recipeId }: CommentsProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': CSRFToken
+          'X-Csrftoken': CSRFToken
         },
         credentials: 'include',
         body: JSON.stringify({ content: newComment.trim() })
@@ -254,7 +254,7 @@ export function Comments({ recipeId }: CommentsProps) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': CSRFToken
+          'X-Csrftoken': CSRFToken
         },
         credentials: 'include',
         body: JSON.stringify({ content: editContent.trim() })
@@ -313,7 +313,7 @@ export function Comments({ recipeId }: CommentsProps) {
         method: 'DELETE',
         credentials: 'include',
         headers: {
-          'X-CSRFToken': CSRFToken
+          'X-Csrftoken': CSRFToken
         }
       })
 

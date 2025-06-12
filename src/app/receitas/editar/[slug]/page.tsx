@@ -112,7 +112,7 @@ export default function EditRecipePage({ params }: PageProps) {
         method: 'PUT',
         credentials: 'include',
         headers: {
-          'X-CSRFToken': CSRFToken
+          'X-Csrftoken': CSRFToken
         },
         body: formData
       })
