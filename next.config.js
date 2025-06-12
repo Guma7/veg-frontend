@@ -5,25 +5,27 @@ const nextConfig = {
     styledComponents: true,
   },
   images: {
-    domains: ['veg-backend-rth1.onrender.com'],
+    domains: [
+      'veg-backend-rth1.onrender.com',
+      'res.cloudinary.com', // 
+    ],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'veg-backend-rth1.onrender.com',
         pathname: '/media/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**', // 
+      },
     ],
   },
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
     ignoreBuildErrors: true,
   },
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
 };
