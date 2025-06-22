@@ -5,7 +5,7 @@ import { FeaturedRecipes } from '../components/home/FeaturedRecipes'
 
 const Hero = styled.div`
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-              url('/hero-bg.jpg') center/cover;
+              url('/nature-basket-apples-grapes-wallpaper-preview.jpg') center/cover;
   height: 60vh;
   display: flex;
   align-items: center;
