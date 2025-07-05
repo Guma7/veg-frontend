@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import { Theme } from './theme'
 
 export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
@@ -6,6 +6,13 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    outline: none;
+    caret-color: transparent; /* Remove a barrinha piscante */
+  }
+
+  /* Cursor padrão para elementos não editáveis */
+  *:not(input):not(textarea):not([contenteditable]) {
+    cursor: default;
   }
 
   body {
@@ -13,6 +20,10 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
     background-color: ${props => props.theme.colors.background.default};
     color: ${props => props.theme.colors.text.primary};
     line-height: 1.5;
+    user-select: text; /* Permite seleção de texto */
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
   }
 
   a {
