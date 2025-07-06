@@ -4,8 +4,9 @@ import styled from 'styled-components'
 import { FeaturedRecipes } from '../components/home/FeaturedRecipes'
 
 const Hero = styled.div`
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)),
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)),
               url('/frut.jpg') center/cover;
+  background-color: #000000; /* Fallback para preto */
   height: 60vh;
   display: flex;
   align-items: center;
@@ -16,6 +17,8 @@ const Hero = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
+  will-change: transform;
   filter: contrast(1.1) brightness(0.9);
 `
 
@@ -42,6 +45,9 @@ const HeroText = styled.p`
 export default function HomePage() {
   return (
     <>
+      {/* Preload da imagem hero para otimização */}
+      <link rel="preload" as="image" href="/frut.jpg" />
+      
       <Hero>
         <HeroContent>
           <HeroTitle>Descubra o Mundo da Culinária Vegana</HeroTitle>
