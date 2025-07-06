@@ -19,6 +19,8 @@ const Hero = styled.div`
   background-repeat: no-repeat;
   background-attachment: scroll;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  contain: layout style paint;
   filter: contrast(1.1) brightness(0.9);
 `
 
@@ -45,7 +47,6 @@ const HeroText = styled.p`
 export default function HomePage() {
   return (
     <>
-      <link rel="preload" as="image" href="/frut.jpg" />
       <Hero>
         <HeroContent>
           <HeroTitle>Descubra o Mundo da Culinária Vegana</HeroTitle>

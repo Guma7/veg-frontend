@@ -63,7 +63,7 @@ const Select = styled.select`
   border: 1px solid white;
   border-radius: ${props => props.theme.borderRadius.md};
   width: 100%;
-  background-color: rgba(232, 232, 232, 0.9);
+  background-color: rgba(218, 218, 218, 0.9);
   
   & option:first-child {
     color: ${props => props.theme.colors.text.disabled};
@@ -79,11 +79,9 @@ const SelectLabel = styled.div`
 `
 
 const StyledInput = styled(Input)`
-  background-color: rgba(242, 241, 241, 0.9);
-  border: 1px solid white;
   
   & input {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(223, 220, 220, 0.9);
     border: 1px solid white;
   }
 `;

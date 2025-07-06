@@ -7,7 +7,12 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
     padding: 0;
     box-sizing: border-box;
     outline: none;
-    caret-color: transparent; /* Remove a barrinha piscante */
+  }
+
+  /* Remove cursor de texto e caret apenas de elementos não editáveis */
+  *:not(input):not(textarea):not([contenteditable]):not([contenteditable="true"]) {
+    caret-color: transparent;
+    cursor: default;
   }
 
   body {
@@ -35,14 +40,16 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
     height: auto;
   }
 
-  /* Cursor padrão para elementos não editáveis */
-  *:not(input):not(textarea):not([contenteditable]) {
-    cursor: default;
+  /* Mantém cursor de texto e caret para campos editáveis */
+  input, textarea, [contenteditable], [contenteditable="true"] {
+    cursor: text !important;
+    caret-color: auto !important;
   }
 
-  /* Mantém cursor de texto apenas para campos editáveis */
-  input, textarea, [contenteditable] {
-    cursor: text;
+  /* Garante que campos de formulário tenham outline quando focados */
+  input:focus, textarea:focus, [contenteditable]:focus {
+    outline: 2px solid ${props => props.theme.colors.primary};
+    outline-offset: 2px;
   }
 
   ::selection {

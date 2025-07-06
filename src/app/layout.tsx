@@ -14,6 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <link rel="preload" as="image" href="/frut.jpg" fetchPriority="high" />
+        <link rel="dns-prefetch" href="//res.cloudinary.com" />
+      </head>
       <body>
         <StyledComponentsRegistry>
           <ThemeProvider theme={theme}>

@@ -21,6 +21,10 @@ const nextConfig = {
         pathname: '/**', // 
       },
     ],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 31536000, // 1 ano
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   typescript: {
     ignoreBuildErrors: true,
