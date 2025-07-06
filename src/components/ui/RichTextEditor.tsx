@@ -75,15 +75,23 @@ const EditorContainer = styled.div`
     }
   }
   
-  /* Força cursor de texto em todos os elementos do editor */
+  /* Força cursor de texto em todos os elementos do editor com máxima especificidade */
   .tiptap-editor,
   .tiptap-editor *,
   .ProseMirror,
   .ProseMirror *,
   [data-tiptap-editor],
-  [data-tiptap-editor] * {
+  [data-tiptap-editor] *,
+  div.ProseMirror,
+  div.ProseMirror *,
+  .tiptap-editor div.ProseMirror,
+  .tiptap-editor div.ProseMirror * {
     cursor: text !important;
     caret-color: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
   }
   
   /* Exceção para botões da toolbar */
@@ -93,6 +101,17 @@ const EditorContainer = styled.div`
   .tiptap-button * {
     cursor: pointer !important;
     caret-color: transparent !important;
+  }
+  
+  /* Regra específica para EditorContent com data attribute */
+  [data-editor-content="true"],
+  [data-editor-content="true"] *,
+  [data-editor-content="true"] .ProseMirror,
+  [data-editor-content="true"] .ProseMirror * {
+    cursor: text !important;
+    caret-color: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
 `
 
@@ -214,7 +233,14 @@ export const RichTextEditor = forwardRef(({ value, onChange, placeholder = 'Escr
             </>
           )}
         </div>
-        <EditorContent editor={editor} />
+        <EditorContent 
+          editor={editor} 
+          style={{
+            cursor: 'text',
+            caretColor: 'auto'
+          }}
+          data-editor-content="true"
+        />
       </div>
     </EditorContainer>
   )

@@ -10,9 +10,15 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
   }
 
   /* Remove cursor de texto e caret apenas de elementos não editáveis */
-  *:not(input):not(textarea):not([contenteditable]):not([contenteditable="true"]):not(.ProseMirror):not(.tiptap-editor):not(.tiptap-editor *) {
+  *:not(input):not(textarea):not([contenteditable]):not([contenteditable="true"]):not(.ProseMirror):not(.tiptap-editor):not(.tiptap-editor *):not(.ProseMirror *) {
     caret-color: transparent;
     cursor: default;
+  }
+  
+  /* Força cursor de texto em elementos editáveis com máxima prioridade */
+  input, textarea, [contenteditable="true"], .ProseMirror, .ProseMirror *, .tiptap-editor, .tiptap-editor * {
+    cursor: text !important;
+    caret-color: auto !important;
   }
   
   /* Exceção específica para elementos dentro do ProseMirror */
@@ -46,11 +52,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
     height: auto;
   }
 
-  /* Mantém cursor de texto e caret para campos editáveis */
-  input, textarea, [contenteditable], [contenteditable="true"], .ProseMirror, .ProseMirror *, .tiptap-editor .ProseMirror, .tiptap-editor .ProseMirror * {
-    cursor: text !important;
-    caret-color: auto !important;
-  }
+  /* Regra consolidada acima - removida duplicação */
 
   /* Garante que campos de formulário tenham outline quando focados */
   input:focus, textarea:focus, [contenteditable]:focus {
