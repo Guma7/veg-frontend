@@ -22,6 +22,8 @@ const CommentInput = styled.textarea`
   border-radius: ${props => props.theme.borderRadius.md};
   min-height: 100px;
   resize: vertical;
+  cursor: text !important;
+  caret-color: auto !important;
 `
 
 const CommentList = styled.div`

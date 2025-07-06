@@ -10,7 +10,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
   }
 
   /* Remove cursor de texto e caret apenas de elementos não editáveis */
-  *:not(input):not(textarea):not([contenteditable]):not([contenteditable="true"]) {
+  *:not(input):not(textarea):not([contenteditable]):not([contenteditable="true"]):not(.ProseMirror) {
     caret-color: transparent;
     cursor: default;
   }
@@ -41,7 +41,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
   }
 
   /* Mantém cursor de texto e caret para campos editáveis */
-  input, textarea, [contenteditable], [contenteditable="true"] {
+  input, textarea, [contenteditable], [contenteditable="true"], .ProseMirror {
     cursor: text !important;
     caret-color: auto !important;
   }

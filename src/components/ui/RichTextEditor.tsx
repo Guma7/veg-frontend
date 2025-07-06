@@ -14,6 +14,8 @@ const EditorContainer = styled.div`
     font-size: 1rem;
     line-height: 1.5;
     outline: none;
+    cursor: text !important;
+    caret-color: auto !important;
     > * + * {
       margin-top: 0.75em;
     }

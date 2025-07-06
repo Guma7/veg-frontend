@@ -30,6 +30,8 @@ const TextArea = styled.textarea`
   margin-bottom: ${props => props.theme.spacing.md};
   font-family: inherit;
   resize: vertical;
+  cursor: text !important;
+  caret-color: auto !important;
 `
 
 const CommentList = styled.div`

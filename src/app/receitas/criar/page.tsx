@@ -47,6 +47,8 @@ const TextArea = styled.textarea<{ small?: boolean }>`
   min-height: ${props => props.small ? '60px' : '200px'};
   font-family: ${props => props.theme.fonts.primary};
   resize: vertical;
+  cursor: text !important;
+  caret-color: auto !important;
 `
 
 // Removido campo SubgenreInput que não é mais utilizado

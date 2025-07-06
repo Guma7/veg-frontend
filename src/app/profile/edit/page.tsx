@@ -35,6 +35,8 @@ const TextArea = styled.textarea`
   border-radius: ${props => props.theme.borderRadius.md};
   min-height: 100px;
   font-family: ${props => props.theme.fonts.primary};
+  cursor: text !important;
+  caret-color: auto !important;
 `
 
 export default function EditProfile() {

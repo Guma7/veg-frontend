@@ -47,6 +47,8 @@ const TextArea = styled.textarea`
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 4px;
   min-height: 100px;
+  cursor: text !important;
+  caret-color: auto !important;
 `
 
 const ButtonGroup = styled.div`
