@@ -10,9 +10,15 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
   }
 
   /* Remove cursor de texto e caret apenas de elementos não editáveis */
-  *:not(input):not(textarea):not([contenteditable]):not([contenteditable="true"]):not(.ProseMirror) {
+  *:not(input):not(textarea):not([contenteditable]):not([contenteditable="true"]):not(.ProseMirror):not(.tiptap-editor):not(.tiptap-editor *) {
     caret-color: transparent;
     cursor: default;
+  }
+  
+  /* Exceção específica para elementos dentro do ProseMirror */
+  .ProseMirror *:not(.tiptap-button):not(.tiptap-toolbar) {
+    cursor: text !important;
+    caret-color: auto !important;
   }
 
   body {
@@ -41,7 +47,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
   }
 
   /* Mantém cursor de texto e caret para campos editáveis */
-  input, textarea, [contenteditable], [contenteditable="true"], .ProseMirror {
+  input, textarea, [contenteditable], [contenteditable="true"], .ProseMirror, .ProseMirror *, .tiptap-editor .ProseMirror, .tiptap-editor .ProseMirror * {
     cursor: text !important;
     caret-color: auto !important;
   }

@@ -16,6 +16,16 @@ const EditorContainer = styled.div`
     outline: none;
     cursor: text !important;
     caret-color: auto !important;
+    
+    &:focus {
+      cursor: text !important;
+      caret-color: auto !important;
+    }
+    
+    * {
+      cursor: text !important;
+      caret-color: auto !important;
+    }
     > * + * {
       margin-top: 0.75em;
     }
@@ -58,6 +68,31 @@ const EditorContainer = styled.div`
     border: 1px solid ${props => props.theme.colors.border};
     border-radius: ${props => props.theme.borderRadius.md};
     background-color: ${props => props.theme.colors.background.paper};
+    
+    .ProseMirror-focused {
+      cursor: text !important;
+      caret-color: auto !important;
+    }
+  }
+  
+  /* Força cursor de texto em todos os elementos do editor */
+  .tiptap-editor,
+  .tiptap-editor *,
+  .ProseMirror,
+  .ProseMirror *,
+  [data-tiptap-editor],
+  [data-tiptap-editor] * {
+    cursor: text !important;
+    caret-color: auto !important;
+  }
+  
+  /* Exceção para botões da toolbar */
+  .tiptap-toolbar,
+  .tiptap-toolbar *,
+  .tiptap-button,
+  .tiptap-button * {
+    cursor: pointer !important;
+    caret-color: transparent !important;
   }
 `
 
